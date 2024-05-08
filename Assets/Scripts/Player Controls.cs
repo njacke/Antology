@@ -127,6 +127,33 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""06f3c394-52b9-4864-9f5e-20ab5d987e97"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DefenseSkill"",
+                    ""type"": ""Button"",
+                    ""id"": ""3dc71c1f-0a93-4502-83ca-9ea388dd174b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UtilitySkill"",
+                    ""type"": ""Button"",
+                    ""id"": ""31ad79a2-97a0-4080-a644-8332cb3adcae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -138,6 +165,39 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""PrimaryAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""52f0de82-7dd6-4e83-a460-c20c67f88019"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b816a63c-0b70-448e-b271-74506f5228a6"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DefenseSkill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1644276c-7e80-43ba-afeb-b7577305e02b"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UtilitySkill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -153,6 +213,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Combat
         m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
         m_Combat_PrimaryAttack = m_Combat.FindAction("PrimaryAttack", throwIfNotFound: true);
+        m_Combat_SecondaryAttack = m_Combat.FindAction("SecondaryAttack", throwIfNotFound: true);
+        m_Combat_DefenseSkill = m_Combat.FindAction("DefenseSkill", throwIfNotFound: true);
+        m_Combat_UtilitySkill = m_Combat.FindAction("UtilitySkill", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -269,11 +332,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Combat;
     private List<ICombatActions> m_CombatActionsCallbackInterfaces = new List<ICombatActions>();
     private readonly InputAction m_Combat_PrimaryAttack;
+    private readonly InputAction m_Combat_SecondaryAttack;
+    private readonly InputAction m_Combat_DefenseSkill;
+    private readonly InputAction m_Combat_UtilitySkill;
     public struct CombatActions
     {
         private @PlayerControls m_Wrapper;
         public CombatActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @PrimaryAttack => m_Wrapper.m_Combat_PrimaryAttack;
+        public InputAction @SecondaryAttack => m_Wrapper.m_Combat_SecondaryAttack;
+        public InputAction @DefenseSkill => m_Wrapper.m_Combat_DefenseSkill;
+        public InputAction @UtilitySkill => m_Wrapper.m_Combat_UtilitySkill;
         public InputActionMap Get() { return m_Wrapper.m_Combat; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -286,6 +355,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PrimaryAttack.started += instance.OnPrimaryAttack;
             @PrimaryAttack.performed += instance.OnPrimaryAttack;
             @PrimaryAttack.canceled += instance.OnPrimaryAttack;
+            @SecondaryAttack.started += instance.OnSecondaryAttack;
+            @SecondaryAttack.performed += instance.OnSecondaryAttack;
+            @SecondaryAttack.canceled += instance.OnSecondaryAttack;
+            @DefenseSkill.started += instance.OnDefenseSkill;
+            @DefenseSkill.performed += instance.OnDefenseSkill;
+            @DefenseSkill.canceled += instance.OnDefenseSkill;
+            @UtilitySkill.started += instance.OnUtilitySkill;
+            @UtilitySkill.performed += instance.OnUtilitySkill;
+            @UtilitySkill.canceled += instance.OnUtilitySkill;
         }
 
         private void UnregisterCallbacks(ICombatActions instance)
@@ -293,6 +371,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PrimaryAttack.started -= instance.OnPrimaryAttack;
             @PrimaryAttack.performed -= instance.OnPrimaryAttack;
             @PrimaryAttack.canceled -= instance.OnPrimaryAttack;
+            @SecondaryAttack.started -= instance.OnSecondaryAttack;
+            @SecondaryAttack.performed -= instance.OnSecondaryAttack;
+            @SecondaryAttack.canceled -= instance.OnSecondaryAttack;
+            @DefenseSkill.started -= instance.OnDefenseSkill;
+            @DefenseSkill.performed -= instance.OnDefenseSkill;
+            @DefenseSkill.canceled -= instance.OnDefenseSkill;
+            @UtilitySkill.started -= instance.OnUtilitySkill;
+            @UtilitySkill.performed -= instance.OnUtilitySkill;
+            @UtilitySkill.canceled -= instance.OnUtilitySkill;
         }
 
         public void RemoveCallbacks(ICombatActions instance)
@@ -318,5 +405,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public interface ICombatActions
     {
         void OnPrimaryAttack(InputAction.CallbackContext context);
+        void OnSecondaryAttack(InputAction.CallbackContext context);
+        void OnDefenseSkill(InputAction.CallbackContext context);
+        void OnUtilitySkill(InputAction.CallbackContext context);
     }
 }

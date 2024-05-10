@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 1907591535433738053}
   - component: {fileID: 5224453301624632290}
   - component: {fileID: 2835753813681930096}
-  - component: {fileID: -8427084476281220647}
+  - component: {fileID: -6608688963218669506}
   m_Layer: 3
-  m_Name: Basic Shield
+  m_Name: Bubble Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,7 +121,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.75
---- !u!114 &-8427084476281220647
+--- !u!114 &-6608688963218669506
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,4 +133,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cef1d6af7fac9745b474f2d345a19c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldDuration: 1

@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
-    [SerializeField] private float shieldDuration = 1f;
-    [SerializeField] private float shieldCooldown = 3f;
+    public float ShieldDuration { set { shieldDuration = value; shieldDurationAssigned = true; } }
+    private float shieldDuration;
     private float shieldLifetime;
-    public float ShieldCooldown { get { return shieldCooldown; } }
+    private bool shieldDurationAssigned = false;
 
     private void Update() {
-        shieldLifetime += Time.deltaTime;
-        if (shieldLifetime > shieldDuration) {
-            Destroy(gameObject);
-            Debug.Log("Shield expired.");        
+        if (shieldDurationAssigned) {
+            shieldLifetime += Time.deltaTime;
+
+            if (shieldLifetime > shieldDuration) {
+                Destroy(gameObject);
+                Debug.Log("Shield expired.");        
+            }
         }
     }
 

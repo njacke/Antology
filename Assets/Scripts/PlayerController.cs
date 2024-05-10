@@ -8,11 +8,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashSpeed = 20f;
     [SerializeField] private float dashDuration = .1f;
-    [SerializeField] private float dashCooldown = 2f;
+    [SerializeField] private float dashCooldown = 3f;
     [SerializeField] private float rotationGracePeriod = .03f;
+    [SerializeField] private float movementGracePeriod = .08f;
 
     public float MoveSpeed { set { moveSpeed = value; } }
+    public float DashCooldown { set { dashCooldown = value; } }
+    public float DashCooldownRemaining { set { dashCooldownRemaining = value; }}
     public bool MovementLocked { set { movementLocked = value; } }
+    public float MovementGradePeriod { get { return movementGracePeriod; } }
 
     private PlayerControls playerControls;
     private Rigidbody2D rb;
@@ -28,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private bool isDashing = false;
     private bool dashIsOnCooldown = false;
     private float dashCooldownRemaining = 0f;
+    private float startingDashCooldown;
 
     private void Awake() {
         playerControls = new PlayerControls();
@@ -39,6 +44,7 @@ public class PlayerController : MonoBehaviour
         playerControls.Movement.Dash.performed += _ => Dash();
 
         startingMoveSpeed = moveSpeed;
+        startingDashCooldown = dashCooldown;
     }
 
     private void OnEnable() {
@@ -184,7 +190,11 @@ public class PlayerController : MonoBehaviour
         this.transform.rotation = targetRotation;        
     }
 
-    public void ResetMoveSpeed() {
+    public void SetDefaultMoveSpeed() {
         this.moveSpeed = startingMoveSpeed;
+    }
+
+    public void SetDefaultDashCooldown() {
+        this.dashCooldown = startingDashCooldown;
     }
 }

@@ -3,200 +3,210 @@ using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
 using System;
-using UnityEditor.ShaderGraph.Internal;
 
 public class PlayerCombat : MonoBehaviour
 {
-    public float DefenseSkillCooldownRemaining { set { defenseSkillCooldownRemaining = value; } }
-    public bool DefenseSkillIsOnCooldown { set { defenseSkillIsOnCooldown = value; } }
-    public float UtilitySkillCooldownRemaining { set { utilitySkillCooldownRemaining = value; } }
-    public bool UtilitySkillIsOnCooldown { set { utilitySkillIsOnCooldown = value; } }
+    private PlayerControls _playerControls;
+    private PlayerController _playerController;
+    private BodyAnimator _bodyAnimator;
+    private EquipmentManager _equipmentManager;
 
-    private float defenseSkillCooldownRemaining = 0f;
-    private bool defenseSkillIsOnCooldown = false;
-    private float utilitySkillCooldownRemaining = 0f;
-    private bool utilitySkillIsOnCooldown = false;
+    [SerializeField] private Ability _headAbility;  
+    [SerializeField] private Ability _topAbility;  
+    private Ability _midAbility;  
+    private Ability _botAbility;
 
-    private bool isBusy = false;
+    private float _primaryAttackCooldownRemaining = 0f;
+    private float _secondaryAttackCooldownRemaining = 0f;
+    private float _utilitySkillCooldownRemaining = 0f;
+    private float _defenseSkillCooldownRemaining = 0f;
+    private bool _primaryAttackIsOnCooldown = false;
+    private bool _secondaryAttackIsOnCooldown = false;
+    private bool _defenseSkillIsOnCooldown = false;
+    private bool _utilitySkillIsOnCooldown = false;
 
-    private PlayerControls playerControls;
-    private PlayerController playerController;
-
-    public static event Action OnPrimaryAttackUsed;
-    public static event Action OnPrimaryAttackAction;
-    public static event Action OnPrimaryAttackEnd;
-
-    public static event Action OnSecondaryAttackUsed;
-    public static event Action OnSecondaryAttackAction;
-    public static event Action OnSecondaryAttackEnd;
-
-    public static event Action OnDefenseSkillUsed;
-    public static event Action OnDefenseSkillAction;
-    public static event Action OnDefenseSkillEnd;
-
-    public static event Action OnUtilitySkillUsed;
-    public static event Action OnUtilitySkillAction;
-    public static event Action OnUtilitySkillEnd;
+    private bool _isBusy = false;
 
     private void Awake() {
-        playerControls = new PlayerControls();
+        _playerControls = new PlayerControls();
+        _playerController = GetComponent<PlayerController>();
+        _bodyAnimator = GetComponent<BodyAnimator>();
+        _equipmentManager = GetComponent<EquipmentManager>();
     }
 
     private void Start() {
-        playerControls.Combat.PrimaryAttack.started += _ => PrimaryAttack();
-        playerControls.Combat.SecondaryAttack.started += _ => SecondaryAttack();
-        playerControls.Combat.DefenseSkill.started += _ => DefenseSkill();
-        playerControls.Combat.UtilitySkill.started += _ => UtilitySkill();
+        _playerControls.Combat.PrimaryAttack.started += _ => PrimaryAttack();
+        _playerControls.Combat.SecondaryAttack.started += _ => SecondaryAttack();
+        _playerControls.Combat.DefenseSkill.started += _ => DefenseSkill();
+        _playerControls.Combat.UtilitySkill.started += _ => UtilitySkill();
 
-        playerController = FindObjectOfType<PlayerController>();
+        GetAbilitiesFromEquipment();
     }
 
-    private void Update()
-    {
-        TrackDefenseSkillCooldown();
-        TrackUtilitySkillCooldown();
+    private void Update() {
+        TrackAllCooldowns();
     }
 
     private void OnEnable() {
-        playerControls.Enable();
+        _playerControls.Enable();
+        EquipmentManager.OnEquipmentChange += GetAbilitiesFromEquipment;
     }
 
     private void OnDisable() {
-        playerControls.Disable();
+        _playerControls.Disable();
+        EquipmentManager.OnEquipmentChange -= GetAbilitiesFromEquipment;
     }    
+
+    public void GetAbilitiesFromEquipment()
+    {
+        _headAbility = _equipmentManager.HeadAbilitySlot.GetComponentInChildren<Ability>();
+        _topAbility = _equipmentManager.TopAbilitySlot.GetComponentInChildren<Ability>();
+        _midAbility = _equipmentManager.MidAbilitySlot.GetComponentInChildren<Ability>();
+        _botAbility = _equipmentManager.BotAbilitySlot.GetComponentInChildren<Ability>();
+    }
 
     // PRIMARY ATTACK
     private void PrimaryAttack() {
-        if (!isBusy) {
+        if (!_isBusy && !_primaryAttackIsOnCooldown && _headAbility != null) {
             StartCoroutine(PrimaryAttackRoutine());
         }
     }
 
     private IEnumerator PrimaryAttackRoutine() {
-        isBusy = true;
-        OnPrimaryAttackUsed?.Invoke();
+        _isBusy = true;
+        _bodyAnimator.PrimaryAttackBodyAnimation(_headAbility.AbilityInfo.Speed);
         Debug.Log("Using PrimaryAttack.");
         
-        yield return new WaitForSeconds(playerController.MovementGradePeriod);
-        playerController.MovementLocked = true;        
+        yield return new WaitForSeconds(_playerController.MovementGradePeriod);
+        _playerController.MovementLocked = true;        
     }
 
     private void PrimaryAttackActionAnimEvent() {
-        OnPrimaryAttackAction?.Invoke();
+        (_headAbility as IAbilityAction)?.AbilityAction();
+        SetCooldown(_headAbility, ref _primaryAttackCooldownRemaining, ref _primaryAttackIsOnCooldown);
     }
 
     private void PrimaryAttackEndAnimEvent() {
-        OnPrimaryAttackEnd?.Invoke();
+        (_headAbility as IAbilityEnd)?.AbilityEnd();
         EnableControls();
     }
 
     // SECONDARY ATTACK
     private void SecondaryAttack() {
-        if (!isBusy) {
+        if (!_isBusy && !_secondaryAttackIsOnCooldown && _topAbility != null) {
             StartCoroutine(SecondaryAttackRoutine());
         }
     }
 
     private IEnumerator SecondaryAttackRoutine() {
-        isBusy = true;
-        OnSecondaryAttackUsed?.Invoke();
+        _isBusy = true;
+        _bodyAnimator.SecondaryAttackBodyAnimation(_topAbility.AbilityInfo.Speed);
         Debug.Log("Using SecondaryAttack.");
         
-        yield return new WaitForSeconds(playerController.MovementGradePeriod);
-        playerController.MovementLocked = true;        
+        yield return new WaitForSeconds(_playerController.MovementGradePeriod);
+        _playerController.MovementLocked = true;        
     }
 
     private void SecondaryAttackActionAnimEvent() {
-        OnSecondaryAttackAction?.Invoke();
+        (_topAbility as IAbilityAction)?.AbilityAction();
+
+        SetCooldown(_topAbility, ref _secondaryAttackCooldownRemaining, ref _secondaryAttackIsOnCooldown);
     }
 
+
     private void SecondaryAttackEndAnimEvent() {
-        OnSecondaryAttackEnd?.Invoke();
+        (_topAbility as IAbilityEnd)?.AbilityEnd();
         EnableControls();
     }
 
     // DEFENSE SKILL
     private void DefenseSkill() {
-        if (!isBusy && !defenseSkillIsOnCooldown) {
+        if (!_isBusy && !_defenseSkillIsOnCooldown && _midAbility != null) {
             StartCoroutine(DefenseSkillRoutine());
         }
     }
 
     private IEnumerator DefenseSkillRoutine() {
-        isBusy = true;
-        OnDefenseSkillUsed?.Invoke();
+        _isBusy = true;
+        _bodyAnimator.DefenseSkillBodyAnimation(_midAbility.AbilityInfo.Speed);
         Debug.Log("Using DefenseSkill.");
 
-        yield return new WaitForSeconds(playerController.MovementGradePeriod);
-        playerController.MovementLocked = true;        
-    }
-
-    private void TrackDefenseSkillCooldown() {
-        if (defenseSkillCooldownRemaining > 0f) {
-            defenseSkillCooldownRemaining -= Time.deltaTime;
-        }
-        else if (defenseSkillIsOnCooldown) {
-            defenseSkillIsOnCooldown = false;
-            Debug.Log("DefenseSkill is ready to use.");
-        }
+        yield return new WaitForSeconds(_playerController.MovementGradePeriod);
+        _playerController.MovementLocked = true;        
     }
 
     private void DefenseSkillActionAnimEvent() {
-        OnDefenseSkillAction?.Invoke();
+        (_midAbility as IAbilityAction)?.AbilityAction();
+
+        SetCooldown(_midAbility, ref _defenseSkillCooldownRemaining, ref _defenseSkillIsOnCooldown);
     }
 
     private void DefenseSkillEndAnimEvent() {
-        OnDefenseSkillEnd?.Invoke();
+        (_midAbility as IAbilityEnd)?.AbilityEnd();
         EnableControls();
     }
 
     // UTILITY SKILL
     private void UtilitySkill() {
-        if (!isBusy && !utilitySkillIsOnCooldown) {
+        if (!_isBusy && !_utilitySkillIsOnCooldown && _botAbility != null) {
             StartCoroutine(UtilitySkillRoutine());
         }
     }
 
     private IEnumerator UtilitySkillRoutine() {
-        isBusy = true;
-        OnUtilitySkillUsed?.Invoke();
+        _isBusy = true;
+        _bodyAnimator.UtilitySkillBodyAnimation(_botAbility.AbilityInfo.Speed);
         Debug.Log("Using UtilitySkill.");
 
-        yield return new WaitForSeconds(playerController.MovementGradePeriod);
-        playerController.MovementLocked = true;
-    }
-
-    private void TrackUtilitySkillCooldown() {
-        if (utilitySkillCooldownRemaining > 0f) {
-            utilitySkillCooldownRemaining -= Time.deltaTime;
-        }
-        else if (utilitySkillIsOnCooldown) {
-            utilitySkillIsOnCooldown = false;
-            Debug.Log("UtilitySkill is ready to use.");
-        }
+        yield return new WaitForSeconds(_playerController.MovementGradePeriod);
+        _playerController.MovementLocked = true;
     }
 
     private void UtilitySkillActionAnimEvent() {
-        OnUtilitySkillAction?.Invoke();
+        (_botAbility as IAbilityAction)?.AbilityAction();
+
+        SetCooldown(_botAbility, ref _utilitySkillCooldownRemaining, ref _utilitySkillIsOnCooldown);
     }
 
     private void UtilitySkillEndAnimEvent() {
-        OnUtilitySkillEnd?.Invoke();
+        (_botAbility as IAbilityEnd)?.AbilityEnd();
         EnableControls();
     }
 
     // OTHER
     private void EnableControls() {
-        isBusy = false;
-        playerController.MovementLocked = false;
+        _isBusy = false;
+        _playerController.MovementLocked = false;
     }
 
-    private void TrackCooldown(float cooldownRemaining, bool isOnCooldown) {
+    private void SetCooldown(Ability ability, ref float cooldownRemaining, ref bool isOnCooldown) {
+        if (ability.AbilityInfo.Cooldown > 0) {
+            cooldownRemaining = ability.AbilityInfo.Cooldown;
+            isOnCooldown = true;
+        }
+    }
+
+    private void TrackCooldown(ref float cooldownRemaining, ref bool isOnCooldown, string debugString) {
         if (cooldownRemaining > 0f) {
             cooldownRemaining -= Time.deltaTime;
         }
         else if (isOnCooldown) {
             isOnCooldown = false;
+            Debug.Log(debugString);
         }
+    }
+
+    private void TrackAllCooldowns(){
+        string debugPA = "PrimaryAttack is ready to use";
+        TrackCooldown(ref _primaryAttackCooldownRemaining, ref _primaryAttackIsOnCooldown, debugPA);
+
+        string debugSA = "SecondaryAttack is ready to use";
+        TrackCooldown(ref _secondaryAttackCooldownRemaining, ref _secondaryAttackIsOnCooldown, debugSA);
+
+        string debugDS = "DefenseSkill is ready to use";
+        TrackCooldown(ref _defenseSkillCooldownRemaining, ref _defenseSkillIsOnCooldown, debugDS);
+
+        string debugUS = "UtilitySkill is ready to use";
+        TrackCooldown(ref _utilitySkillCooldownRemaining, ref _utilitySkillIsOnCooldown, debugUS);
     }
 }

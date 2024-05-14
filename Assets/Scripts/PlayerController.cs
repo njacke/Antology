@@ -5,54 +5,54 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float dashSpeed = 20f;
-    [SerializeField] private float dashDuration = .1f;
-    [SerializeField] private float dashCooldown = 3f;
-    [SerializeField] private float rotationGracePeriod = .03f;
-    [SerializeField] private float movementGracePeriod = .08f;
+    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _dashSpeed = 20f;
+    [SerializeField] private float _dashDuration = .1f;
+    [SerializeField] private float _dashCooldown = 3f;
+    [SerializeField] private float _rotationGracePeriod = .03f;
+    [SerializeField] private float _movementGracePeriod = .08f;
 
-    public float MoveSpeed { set { moveSpeed = value; } }
-    public float DashCooldown { set { dashCooldown = value; } }
-    public float DashCooldownRemaining { set { dashCooldownRemaining = value; }}
-    public bool MovementLocked { set { movementLocked = value; } }
-    public float MovementGradePeriod { get { return movementGracePeriod; } }
+    public float MoveSpeed { set { _moveSpeed = value; } }
+    public float DashCooldown { set { _dashCooldown = value; } }
+    public float DashCooldownRemaining { set { _dashCooldownRemaining = value; }}
+    public bool MovementLocked { set { _movementLocked = value; } }
+    public float MovementGradePeriod { get { return _movementGracePeriod; } }
 
-    private PlayerControls playerControls;
-    private Rigidbody2D rb;
+    private PlayerControls _playerControls;
+    private Rigidbody2D _rb;
 
-    private Vector2 movement = Vector2.zero;
-    private Vector2 previousMovement = Vector2.zero;
-    private Vector2 delayedMovement = Vector2.zero;
-    private float timeSinceMovementChange = 0f; 
-    private float startingMoveSpeed;
-    private bool movementLocked = false;
+    private Vector2 _movement = Vector2.zero;
+    private Vector2 _previousMovement = Vector2.zero;
+    private Vector2 _delayedMovement = Vector2.zero;
+    private float _timeSinceMovementChange = 0f; 
+    private float _startingMoveSpeed;
+    private bool _movementLocked = false;
 
-    private Vector2 dashDirection = Vector2.zero;
-    private bool isDashing = false;
-    private bool dashIsOnCooldown = false;
-    private float dashCooldownRemaining = 0f;
-    private float startingDashCooldown;
+    private Vector2 _dashDirection = Vector2.zero;
+    private bool _isDashing = false;
+    private bool _dashIsOnCooldown = false;
+    private float _dashCooldownRemaining = 0f;
+    private float _startingDashCooldown;
 
     private void Awake() {
-        playerControls = new PlayerControls();
+        _playerControls = new PlayerControls();
 
-        rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
     }
 
     private void Start() {
-        playerControls.Movement.Dash.performed += _ => Dash();
+        _playerControls.Movement.Dash.performed += _ => Dash();
 
-        startingMoveSpeed = moveSpeed;
-        startingDashCooldown = dashCooldown;
+        _startingMoveSpeed = _moveSpeed;
+        _startingDashCooldown = _dashCooldown;
     }
 
     private void OnEnable() {
-        playerControls.Enable();
+        _playerControls.Enable();
     }
 
     private void OnDisable() {
-        playerControls.Disable();
+        _playerControls.Disable();
     }
 
     private void Update() {
@@ -66,32 +66,32 @@ public class PlayerController : MonoBehaviour
     }
 
     private void PlayerInput() {
-        movement = playerControls.Movement.Move.ReadValue<Vector2>();
+        _movement = _playerControls.Movement.Move.ReadValue<Vector2>();
     }
 
     private void TrackPlayerMovementChange() {
-        if (previousMovement == movement) {
-            timeSinceMovementChange += Time.deltaTime;
+        if (_previousMovement == _movement) {
+            _timeSinceMovementChange += Time.deltaTime;
             //Debug.Log(timeSinceMovementChange);
         }
-        else if (timeSinceMovementChange > rotationGracePeriod) {
-            timeSinceMovementChange = 0f;
-            delayedMovement = previousMovement;
+        else if (_timeSinceMovementChange > _rotationGracePeriod) {
+            _timeSinceMovementChange = 0f;
+            _delayedMovement = _previousMovement;
         }
 
-        if (movement != Vector2.zero) { // don't want to rotate to zero when we stop moving
-            previousMovement = movement;
+        if (_movement != Vector2.zero) { // don't want to rotate to zero when we stop moving
+            _previousMovement = _movement;
         }            
     }
 
     private void Move() {
-        if (!movementLocked) {
-            if (isDashing) {
-                rb.MovePosition((Vector2)this.transform.position + dashSpeed * Time.fixedDeltaTime * dashDirection);
+        if (!_movementLocked) {
+            if (_isDashing) {
+                _rb.MovePosition((Vector2)this.transform.position + _dashSpeed * Time.fixedDeltaTime * _dashDirection);
             }
 
             else {
-                rb.MovePosition((Vector2)this.transform.position + moveSpeed * Time.fixedDeltaTime * movement);
+                _rb.MovePosition((Vector2)this.transform.position + _moveSpeed * Time.fixedDeltaTime * _movement);
                 //Debug.Log("Magnitude " + movement.magnitude);
             }
 
@@ -100,13 +100,13 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Dash() {
-        if (!isDashing && !dashIsOnCooldown && !movementLocked) {
-            isDashing = true;
-            dashCooldownRemaining = dashCooldown;
-            dashIsOnCooldown = true;
-            dashDirection = movement;
-            if (dashDirection == Vector2.zero) {
-                dashDirection = delayedMovement;
+        if (!_isDashing && !_dashIsOnCooldown && !_movementLocked) {
+            _isDashing = true;
+            _dashCooldownRemaining = _dashCooldown;
+            _dashIsOnCooldown = true;
+            _dashDirection = _movement;
+            if (_dashDirection == Vector2.zero) {
+                _dashDirection = _delayedMovement;
             }
 
             StartCoroutine(EndDashRoutine());
@@ -114,29 +114,29 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator EndDashRoutine() {
-        yield return new WaitForSeconds(dashDuration);
-        isDashing = false;
+        yield return new WaitForSeconds(_dashDuration);
+        _isDashing = false;
     }
 
     private void TrackDashCooldown() {
-        if (dashCooldownRemaining > 0f) {
-            dashCooldownRemaining -= Time.deltaTime;
+        if (_dashCooldownRemaining > 0f) {
+            _dashCooldownRemaining -= Time.deltaTime;
         }
-        else if (dashIsOnCooldown) {
-            dashIsOnCooldown = false;
+        else if (_dashIsOnCooldown) {
+            _dashIsOnCooldown = false;
             Debug.Log("Dash is ready to use.");
         }
     }
 
     private void RotatePlayerToMoveDirection() {
-        if (movement == Vector2.zero) {
+        if (_movement == Vector2.zero) {
             // use delayedMovement to prevent rotation within grace period
-            float angle = Mathf.Atan2(delayedMovement.x, delayedMovement.y) * Mathf.Rad2Deg;
-            rb.rotation = -angle;
+            float angle = Mathf.Atan2(_delayedMovement.x, _delayedMovement.y) * Mathf.Rad2Deg;
+            _rb.rotation = -angle;
         }
-        else if (timeSinceMovementChange > rotationGracePeriod) {
-            float angle = Mathf.Atan2(movement.x, movement.y) * Mathf.Rad2Deg;
-            rb.rotation = -angle;
+        else if (_timeSinceMovementChange > _rotationGracePeriod) {
+            float angle = Mathf.Atan2(_movement.x, _movement.y) * Mathf.Rad2Deg;
+            _rb.rotation = -angle;
         }
     }
 
@@ -191,10 +191,10 @@ public class PlayerController : MonoBehaviour
     }
 
     public void SetDefaultMoveSpeed() {
-        this.moveSpeed = startingMoveSpeed;
+        this._moveSpeed = _startingMoveSpeed;
     }
 
     public void SetDefaultDashCooldown() {
-        this.dashCooldown = startingDashCooldown;
+        this._dashCooldown = _startingDashCooldown;
     }
 }

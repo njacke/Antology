@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
-    public float ShieldDuration { set { shieldDuration = value; shieldDurationAssigned = true; } }
-    private float shieldDuration;
-    private float shieldLifetime;
-    private bool shieldDurationAssigned = false;
+    public float ShieldDuration { set { _shieldDuration = value; _shieldDurationAssigned = true; } }
+    private float _shieldDuration;
+    private float _shieldLifetime;
+    private bool _shieldDurationAssigned = false;
 
     private void Update() {
-        if (shieldDurationAssigned) {
-            shieldLifetime += Time.deltaTime;
+        if (_shieldDurationAssigned) {
+            _shieldLifetime += Time.deltaTime;
 
-            if (shieldLifetime > shieldDuration) {
+            if (_shieldLifetime > _shieldDuration) {
                 Destroy(gameObject);
                 Debug.Log("Shield expired.");        
             }

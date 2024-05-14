@@ -4,13 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 10f;
-
-    private Rigidbody2D rb;
-
-    private void Awake() {
-        rb = GetComponent<Rigidbody2D>();
-    }
+    [SerializeField] private float _moveSpeed = 10f;
 
     private void Update() {
         MoveProjectile();
@@ -21,6 +15,6 @@ public class Projectile : MonoBehaviour
     }
 
     private void MoveProjectile() {
-        transform.Translate(moveSpeed * Time.deltaTime * Vector3.up);
+        transform.Translate(_moveSpeed * Time.deltaTime * Vector3.up);
     }
 }

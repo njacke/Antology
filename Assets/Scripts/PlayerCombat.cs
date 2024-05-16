@@ -59,10 +59,10 @@ public class PlayerCombat : MonoBehaviour
 
     public void GetAbilitiesFromEquipment()
     {
-        _headAbility = _equipmentManager.HeadAbilitySlot.GetComponentInChildren<Ability>();
-        _topAbility = _equipmentManager.TopAbilitySlot.GetComponentInChildren<Ability>();
-        _midAbility = _equipmentManager.MidAbilitySlot.GetComponentInChildren<Ability>();
-        _botAbility = _equipmentManager.BotAbilitySlot.GetComponentInChildren<Ability>();
+        _headAbility = _equipmentManager.HeadAbility;
+        _topAbility = _equipmentManager.TopAbility;
+        _midAbility = _equipmentManager.MidAbility;
+        _botAbility = _equipmentManager.BotAbility;
     }
 
     // PRIMARY ATTACK

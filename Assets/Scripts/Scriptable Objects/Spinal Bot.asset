@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92dd8447f83706746a078ae384d39421, type: 3}
-  m_Name: Bubble
+  m_Script: {fileID: 11500000, guid: d52ffbfc15b91f744bd698fae50fd4ae, type: 3}
+  m_Name: Spinal Bot
   m_EditorClassIdentifier: 
-  ID: 13001
-  Name: Bubble
-  Slot: 2
-  Speed: 1
-  Cooldown: 5
-  Duration: 1
-  Damage: 0
+  ID: 24001
+  Name: Spinal Bot
+  Slot: 3
+  Health: 1

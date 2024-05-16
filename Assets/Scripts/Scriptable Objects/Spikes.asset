@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92dd8447f83706746a078ae384d39421, type: 3}
   m_Name: Spikes
   m_EditorClassIdentifier: 
-  ID: 2001
+  ID: 12001
   Name: Spikes
   Slot: 1
   Speed: 1

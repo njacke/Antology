@@ -27,15 +27,15 @@ public class BodyAnimator : MonoBehaviour
         _myAnimator = GetComponent<Animator>();
     }
 
-    public void PrimaryAttackBodyAnimation(EquipmentManager.AbilitySpeed abilitySpeed) {
+    public void PrimaryAttackBodyAnimation(Ability.AbilitySpeed abilitySpeed) {
         switch (abilitySpeed) {
-            case EquipmentManager.AbilitySpeed.Slow:
+            case Ability.AbilitySpeed.Slow:
                 _myAnimator.SetTrigger(PRIMARY_ATTACK_SLOW_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Normal:
+            case Ability.AbilitySpeed.Normal:
                 _myAnimator.SetTrigger(PRIMARY_ATTACK_NORMAL_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Fast:
+            case Ability.AbilitySpeed.Fast:
                 _myAnimator.SetTrigger(PRIMARY_ATTACK_FAST_HASH);
                 break;
             default:
@@ -43,16 +43,16 @@ public class BodyAnimator : MonoBehaviour
         }   
     }
 
-    public void SecondaryAttackBodyAnimation(EquipmentManager.AbilitySpeed abilitySpeed) {
+    public void SecondaryAttackBodyAnimation(Ability.AbilitySpeed abilitySpeed) {
         Debug.Log("Animator SA entered");
         switch (abilitySpeed) {
-            case EquipmentManager.AbilitySpeed.Slow:
+            case Ability.AbilitySpeed.Slow:
                 _myAnimator.SetTrigger(SECONDARY_ATTACK_SLOW_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Normal:
+            case Ability.AbilitySpeed.Normal:
                 _myAnimator.SetTrigger(SECONDARY_ATTACK_NORMAL_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Fast:
+            case Ability.AbilitySpeed.Fast:
                 _myAnimator.SetTrigger(SECONDARY_ATTACK_FAST_HASH);
                 break;
             default:
@@ -60,15 +60,15 @@ public class BodyAnimator : MonoBehaviour
         }    
     }
 
-    public void DefenseSkillBodyAnimation(EquipmentManager.AbilitySpeed abilitySpeed) {
+    public void DefenseSkillBodyAnimation(Ability.AbilitySpeed abilitySpeed) {
         switch (abilitySpeed) {
-            case EquipmentManager.AbilitySpeed.Slow:
+            case Ability.AbilitySpeed.Slow:
                 _myAnimator.SetTrigger(DEFENSE_SKILL_SLOW_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Normal:
+            case Ability.AbilitySpeed.Normal:
                 _myAnimator.SetTrigger(DEFENSE_SKILL_NORMAL_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Fast:
+            case Ability.AbilitySpeed.Fast:
                 _myAnimator.SetTrigger(DEFENSE_SKILL_FAST_HASH);
                 break;
             default:
@@ -76,15 +76,15 @@ public class BodyAnimator : MonoBehaviour
         }
     }
     
-    public void UtilitySkillBodyAnimation(EquipmentManager.AbilitySpeed abilitySpeed) {
+    public void UtilitySkillBodyAnimation(Ability.AbilitySpeed abilitySpeed) {
         switch (abilitySpeed) {
-            case EquipmentManager.AbilitySpeed.Slow:
+            case Ability.AbilitySpeed.Slow:
                 _myAnimator.SetTrigger(UTILITY_SKILL_SLOW_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Normal:
+            case Ability.AbilitySpeed.Normal:
                 _myAnimator.SetTrigger(UTILITY_SKILL_NORMAL_HASH);
                 break;
-            case EquipmentManager.AbilitySpeed.Fast:
+            case Ability.AbilitySpeed.Fast:
                 _myAnimator.SetTrigger(UTILITY_SKILL_FAST_HASH);
                 break;
             default:

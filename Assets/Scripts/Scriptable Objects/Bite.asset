@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92dd8447f83706746a078ae384d39421, type: 3}
   m_Name: Bite
   m_EditorClassIdentifier: 
-  ID: 1001
+  ID: 11001
   Name: Bite
-  Type: 0
+  Slot: 0
   Speed: 1
   Cooldown: 0
   Duration: 0

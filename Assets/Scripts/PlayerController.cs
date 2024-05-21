@@ -1,18 +1,18 @@
 using System.Collections;
-using System.Xml.Serialization;
-using Unity.VisualScripting;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _baseMoveSpeed = 6f;
     [SerializeField] private float _dashSpeed = 20f;
+    [SerializeField] private float _armorSpeedReduction = .5f;
     [SerializeField] private float _dashDuration = .1f;
     [SerializeField] private float _dashCooldown = 3f;
-    [SerializeField] private float _rotationGracePeriod = .03f;
+    [SerializeField] private float _rotationGracePeriod = .05f;
     [SerializeField] private float _movementGracePeriod = .08f;
 
-    public float MoveSpeed { set { _moveSpeed = value; } }
     public float DashCooldown { set { _dashCooldown = value; } }
     public float DashCooldownRemaining { set { _dashCooldownRemaining = value; }}
     public bool MovementLocked { set { _movementLocked = value; } }
@@ -20,12 +20,12 @@ public class PlayerController : MonoBehaviour
 
     private PlayerControls _playerControls;
     private Rigidbody2D _rb;
+    private EquipmentManager _equipmentManager;
 
     private Vector2 _movement = Vector2.zero;
     private Vector2 _previousMovement = Vector2.zero;
     private Vector2 _delayedMovement = Vector2.zero;
     private float _timeSinceMovementChange = 0f; 
-    private float _startingMoveSpeed;
     private bool _movementLocked = false;
 
     private Vector2 _dashDirection = Vector2.zero;
@@ -38,21 +38,26 @@ public class PlayerController : MonoBehaviour
         _playerControls = new PlayerControls();
 
         _rb = GetComponent<Rigidbody2D>();
+
+        _equipmentManager = GetComponent<EquipmentManager>();
     }
 
     private void Start() {
         _playerControls.Movement.Dash.performed += _ => Dash();
 
-        _startingMoveSpeed = _moveSpeed;
+        CalculateAndSetMoveSpeed();
+
         _startingDashCooldown = _dashCooldown;
     }
 
     private void OnEnable() {
         _playerControls.Enable();
+        EquipmentManager.OnEquipmentChange += CalculateAndSetMoveSpeed;
     }
 
     private void OnDisable() {
         _playerControls.Disable();
+        EquipmentManager.OnEquipmentChange -= CalculateAndSetMoveSpeed;
     }
 
     private void Update() {
@@ -72,7 +77,6 @@ public class PlayerController : MonoBehaviour
     private void TrackPlayerMovementChange() {
         if (_previousMovement == _movement) {
             _timeSinceMovementChange += Time.deltaTime;
-            //Debug.Log(timeSinceMovementChange);
         }
         else if (_timeSinceMovementChange > _rotationGracePeriod) {
             _timeSinceMovementChange = 0f;
@@ -92,7 +96,6 @@ public class PlayerController : MonoBehaviour
 
             else {
                 _rb.MovePosition((Vector2)this.transform.position + _moveSpeed * Time.fixedDeltaTime * _movement);
-                //Debug.Log("Magnitude " + movement.magnitude);
             }
 
             RotatePlayerToMoveDirection();
@@ -128,19 +131,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // TODO remove -90f when I change sprites to right orientation 
     private void RotatePlayerToMoveDirection() {
         if (_movement == Vector2.zero) {
             // use delayedMovement to prevent rotation within grace period
-            float angle = Mathf.Atan2(_delayedMovement.x, _delayedMovement.y) * Mathf.Rad2Deg;
-            _rb.rotation = -angle;
+            float angle = Mathf.Atan2(_delayedMovement.y, _delayedMovement.x) * Mathf.Rad2Deg;
+            _rb.rotation = angle - 90f;
         }
         else if (_timeSinceMovementChange > _rotationGracePeriod) {
-            float angle = Mathf.Atan2(_movement.x, _movement.y) * Mathf.Rad2Deg;
-            _rb.rotation = -angle;
+            float angle = Mathf.Atan2(_movement.y, _movement.x) * Mathf.Rad2Deg;
+            _rb.rotation = angle - 90f;
         }
     }
 
-    // ROTATION TOWARDS MOUSE (ALTERNATIVE CONTROL SCHEME)
+    // ROTATION TOWARDS MOUSE (ALTERNATIVE CONTROL SCHEME) -> NOT USED ATM
 
     private Vector3 GetMouseWorldPos() {
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -190,8 +194,19 @@ public class PlayerController : MonoBehaviour
         this.transform.rotation = targetRotation;        
     }
 
-    public void SetDefaultMoveSpeed() {
-        this._moveSpeed = _startingMoveSpeed;
+    // DEFAULTS
+
+    public void CalculateAndSetMoveSpeed() {
+
+        int armorsAmount = 0;
+
+        foreach (var armor in _equipmentManager.ArmorDict) {
+            if (armor.Value != null) {
+                armorsAmount++;
+            }
+        }
+
+        _moveSpeed = _baseMoveSpeed - armorsAmount * _armorSpeedReduction;
     }
 
     public void SetDefaultDashCooldown() {

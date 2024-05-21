@@ -17,8 +17,15 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
-        UpdateCurrentArmor();
-        StartCoroutine(TakeDamageTestRoutine());
+        //StartCoroutine(TakeDamageTestRoutine());
+    }
+
+    private void OnEnable() {
+        EquipmentManager.OnEquipmentChange += UpdateCurrentArmor;
+    }
+
+    private void OnDisable() {
+        EquipmentManager.OnEquipmentChange -= UpdateCurrentArmor;
     }
 
     private IEnumerator TakeDamageTestRoutine() {
@@ -30,28 +37,25 @@ public class PlayerHealth : MonoBehaviour
     }
 
     private void UpdateCurrentArmor() {
-        var currentArmorDict = _equipmentManager.GetArmorDict();
         int currentArmor = 0;
 
-        foreach (var armor in currentArmorDict) {
+        foreach (var armor in _equipmentManager.ArmorDict) {
             if (armor.Value != null) {
                currentArmor += armor.Value.ArmorInfo.Health;
             }
         }
 
         _currentArmor = currentArmor;
+        //Debug.Log("Current armor: " + _currentArmor);
     }
 
     private void TakeDamage(int damageAmount) {
         for (int i = 0; i < damageAmount; i++) {
-            if (_currentArmor > 0) {
-                var currentArmorDict = _equipmentManager.GetArmorDict();
-                foreach (var armor in currentArmorDict) {
+            if (_currentArmor > 0) {                
+                foreach (var armor in _equipmentManager.ArmorDict) {
                     if (armor.Value != null) {
-                        armor.Value.ArmorInfo.Health--;
-                        if (armor.Value.ArmorInfo.Health <= 0) {
-                            _equipmentManager.UnequipItem(armor.Key, Equipment.EquipmentType.Armor); // dict changes
-                        }
+                        Debug.Log("Armor found.");
+                        _equipmentManager.UnequipItem(armor.Key, Equipment.EquipmentType.Armor); // dict changes
                         break; // 1 "damage" per loop to 1st armor found
                     }
                 }
@@ -59,8 +63,6 @@ public class PlayerHealth : MonoBehaviour
             else {
                 _baseHealth--;
             }
-
-            UpdateCurrentArmor();
         }
 
         if (_baseHealth <= 0) {

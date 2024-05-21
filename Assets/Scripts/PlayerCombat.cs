@@ -39,8 +39,6 @@ public class PlayerCombat : MonoBehaviour
         _playerControls.Combat.SecondaryAttack.started += _ => SecondaryAttack();
         _playerControls.Combat.DefenseSkill.started += _ => DefenseSkill();
         _playerControls.Combat.UtilitySkill.started += _ => UtilitySkill();
-
-        GetAbilitiesFromEquipment();
     }
 
     private void Update() {
@@ -196,7 +194,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void TrackAllCooldowns(){
+    private void TrackAllCooldowns() {
         string debugPA = "PrimaryAttack is ready to use";
         TrackCooldown(ref _primaryAttackCooldownRemaining, ref _primaryAttackIsOnCooldown, debugPA);
 

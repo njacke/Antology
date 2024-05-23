@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -26,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 _previousMovement = Vector2.zero;
     private Vector2 _delayedMovement = Vector2.zero;
     private float _timeSinceMovementChange = 0f; 
-    private bool _movementLocked = false;
+    [SerializeField] private bool _movementLocked = false;
 
     private Vector2 _dashDirection = Vector2.zero;
     private bool _isDashing = false;
@@ -90,10 +89,10 @@ public class PlayerController : MonoBehaviour
 
     private void Move() {
         if (!_movementLocked) {
+            //_rb.velocity = Vector2.zero;
             if (_isDashing) {
                 _rb.MovePosition((Vector2)this.transform.position + _dashSpeed * Time.fixedDeltaTime * _dashDirection);
             }
-
             else {
                 _rb.MovePosition((Vector2)this.transform.position + _moveSpeed * Time.fixedDeltaTime * _movement);
             }
@@ -194,7 +193,7 @@ public class PlayerController : MonoBehaviour
         this.transform.rotation = targetRotation;        
     }
 
-    // DEFAULTS
+    // PUBLIC
 
     public void CalculateAndSetMoveSpeed() {
 

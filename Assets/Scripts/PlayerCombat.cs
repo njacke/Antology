@@ -25,7 +25,8 @@ public class PlayerCombat : MonoBehaviour
     private bool _defenseSkillIsOnCooldown = false;
     private bool _utilitySkillIsOnCooldown = false;
 
-    private bool _isBusy = false;
+    private bool _canAttack = true;
+    public bool CanAttack {set { _canAttack = value; } }
 
     private void Awake() {
         _playerControls = new PlayerControls();
@@ -65,13 +66,13 @@ public class PlayerCombat : MonoBehaviour
 
     // PRIMARY ATTACK
     private void PrimaryAttack() {
-        if (!_isBusy && !_primaryAttackIsOnCooldown && _headAbility != null) {
+        if (_canAttack && !_primaryAttackIsOnCooldown && _headAbility != null) {
             StartCoroutine(PrimaryAttackRoutine());
         }
     }
 
     private IEnumerator PrimaryAttackRoutine() {
-        _isBusy = true;
+        _canAttack = false;
         _bodyAnimator.PrimaryAttackBodyAnimation(_headAbility.AbilityInfo.Speed);
         Debug.Log("Using PrimaryAttack.");
         
@@ -91,13 +92,13 @@ public class PlayerCombat : MonoBehaviour
 
     // SECONDARY ATTACK
     private void SecondaryAttack() {
-        if (!_isBusy && !_secondaryAttackIsOnCooldown && _topAbility != null) {
+        if (_canAttack && !_secondaryAttackIsOnCooldown && _topAbility != null) {
             StartCoroutine(SecondaryAttackRoutine());
         }
     }
 
     private IEnumerator SecondaryAttackRoutine() {
-        _isBusy = true;
+        _canAttack = false;
         _bodyAnimator.SecondaryAttackBodyAnimation(_topAbility.AbilityInfo.Speed);
         Debug.Log("Using SecondaryAttack.");
         
@@ -119,13 +120,13 @@ public class PlayerCombat : MonoBehaviour
 
     // DEFENSE SKILL
     private void DefenseSkill() {
-        if (!_isBusy && !_defenseSkillIsOnCooldown && _midAbility != null) {
+        if (_canAttack && !_defenseSkillIsOnCooldown && _midAbility != null) {
             StartCoroutine(DefenseSkillRoutine());
         }
     }
 
     private IEnumerator DefenseSkillRoutine() {
-        _isBusy = true;
+        _canAttack = false;
         _bodyAnimator.DefenseSkillBodyAnimation(_midAbility.AbilityInfo.Speed);
         Debug.Log("Using DefenseSkill.");
 
@@ -146,13 +147,13 @@ public class PlayerCombat : MonoBehaviour
 
     // UTILITY SKILL
     private void UtilitySkill() {
-        if (!_isBusy && !_utilitySkillIsOnCooldown && _botAbility != null) {
+        if (_canAttack && !_utilitySkillIsOnCooldown && _botAbility != null) {
             StartCoroutine(UtilitySkillRoutine());
         }
     }
 
     private IEnumerator UtilitySkillRoutine() {
-        _isBusy = true;
+        _canAttack = false;
         _bodyAnimator.UtilitySkillBodyAnimation(_botAbility.AbilityInfo.Speed);
         Debug.Log("Using UtilitySkill.");
 
@@ -173,7 +174,7 @@ public class PlayerCombat : MonoBehaviour
 
     // OTHER
     private void EnableControls() {
-        _isBusy = false;
+        _canAttack = true;
         _playerController.MovementLocked = false;
     }
 

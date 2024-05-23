@@ -49,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
         //Debug.Log("Current armor: " + _currentArmor);
     }
 
-    private void TakeDamage(int damageAmount) {
+    public void TakeDamage(int damageAmount) {
         for (int i = 0; i < damageAmount; i++) {
             if (_currentArmor > 0) {                
                 foreach (var armor in _equipmentManager.ArmorDict) {

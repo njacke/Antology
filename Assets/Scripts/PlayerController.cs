@@ -149,6 +149,7 @@ public class PlayerController : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
+    //TODO: FIX WITH CORRECT ATAN2 -> SEE CHASE SCRIPT
     private void RotatePlayerToMousePos() {
         Vector3 mouseWorldPos = GetMouseWorldPos();
         mouseWorldPos.z = this.transform.position.z;

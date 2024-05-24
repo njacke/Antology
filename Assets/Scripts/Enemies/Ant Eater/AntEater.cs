@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class AntEater : Entity
 {
-    public AntEaterMoveState MoveState { get; private set; }
+    public AntEaterMeleeState MeleeState { get; private set; }
     public AntEaterChaseState ChaseState { get; private set; }
 
-    [SerializeField] private MoveStateInfo _moveStateInfo;
     [SerializeField] private ChaseStateInfo _chaseStateInfo;
+    [SerializeField] private MeleeStateInfo _meleeStateInfo;
 
-    public  AntEaterTongue Tongue { get; private set; }
+    public AntEaterTongue TongueAttack { get; private set; }
+    public AntEaterMeleeAttack MeleeAttack { get; private set;}
+    public AntEaterTailAttack TailAttack { get; private set; }
     private Transform _player;
 
     private readonly int ANIM_BOOL_MOVE_HASH = Animator.StringToHash("Move");
@@ -19,7 +21,9 @@ public class AntEater : Entity
     public override void Awake()
     {
         base.Awake();
-        Tongue = GetComponentInChildren<AntEaterTongue>();
+        TongueAttack = GetComponentInChildren<AntEaterTongue>();
+        MeleeAttack = GetComponent<AntEaterMeleeAttack>();
+        TailAttack = GetComponent<AntEaterTailAttack>();
     }
 
     public override void Start()
@@ -27,7 +31,7 @@ public class AntEater : Entity
         base.Start();
         _player = FindObjectOfType<PlayerController>().transform;
 
-        MoveState = new AntEaterMoveState(this, StateMachine, ANIM_BOOL_MOVE_HASH, _moveStateInfo, this);
+        MeleeState = new AntEaterMeleeState(this, StateMachine, ANIM_BOOL_MOVE_HASH, _meleeStateInfo, _player, this);
         ChaseState = new AntEaterChaseState(this, StateMachine, ANIM_BOOL_CHASE_HASH, _chaseStateInfo, _player, this);
 
         StateMachine.Initialize(ChaseState);

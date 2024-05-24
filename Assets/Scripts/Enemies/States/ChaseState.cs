@@ -26,16 +26,57 @@ public class ChaseState : State
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        Vector3 dir = _target.position - _entity.transform.position;
-        float distance = dir.magnitude;
-        _entity.transform.right = Vector3.MoveTowards(_entity.transform.right, dir, _chaseStateInfo.RotationSpeed * Time.deltaTime);
-        if (distance <= _chaseStateInfo.MaxChaseRange && distance >= _chaseStateInfo.MinChaseRange) {
-            _entity.transform.position = Vector3.MoveTowards(_entity.transform.position, _entity.transform.position + _entity.transform.right, _chaseStateInfo.MovementSpeed * Time.deltaTime);
-        }
+        RotateTowardsTarget();
+        MoveForward();
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    public virtual void MoveForward() {
+        _entity.transform.position = Vector3.MoveTowards(_entity.transform.position, _entity.transform.position + _entity.transform.right, _chaseStateInfo.MovementSpeed * Time.deltaTime);
+    }
+
+    public virtual void RotateTowardsTarget() {
+
+        //Debug.Log("Rotating towards target");
+        //_entity.transform.right = Vector3.MoveTowards(_entity.transform.right, dir, _chaseStateInfo.RotationSpeed * Time.deltaTime);
+
+        Vector3 dir = _target.position - _entity.transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        //Debug.Log("Angle is " + angle);
+
+        Quaternion targetRotation;
+
+
+        if (angle >= -22.5f && angle < 22.5f) {
+            targetRotation = Quaternion.Euler(0, 0, 0); // RIGHT          
+        }
+        else if (angle >= 22.5f && angle < 67.5f) {
+            targetRotation = Quaternion.Euler(0, 0, 45); //TOP-RIGHT
+        }
+        else if (angle >= 67.5f && angle < 112.5f) {
+            targetRotation = Quaternion.Euler(0, 0, 90); //TOP
+        }
+        else if (angle >= 112.5f && angle < 157.5f) {
+            targetRotation = Quaternion.Euler(0, 0, 135); //TOP-LEFT
+        }
+        else if (angle >= -157.5f && angle < -112.5f) {
+            targetRotation = Quaternion.Euler(0, 0, -135); //BOTTOM-LEFT
+        }
+        else if (angle >= -112.5f && angle < -67.5f) {
+            targetRotation = Quaternion.Euler(0, 0, -90); //BOTTOM
+        }
+        else if (angle >= -67.5f && angle < -22.5f) {
+            targetRotation = Quaternion.Euler(0, 0, -45); //BOTTOM-RIGHT
+        }        
+        else {
+            targetRotation = Quaternion.Euler(0, 0, 180); //LEFT
+        }
+
+        _entity.transform.rotation = Quaternion.Slerp(_entity.transform.rotation, targetRotation, _chaseStateInfo.RotationSpeed * Time.deltaTime);        
     }
 }

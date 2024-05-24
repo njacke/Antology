@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AntEaterMelee : MonoBehaviour
+public class AntEaterMeleeAttack : MonoBehaviour
 {
-    [SerializeField] private float _minAttackAngle = 90f;
-    [SerializeField] private float _maxAttackAngle = 270f;
+    [SerializeField] private float _minAttackAngle = 130f;
+    [SerializeField] private float _maxAttackAngle = 180f;
     [SerializeField] private float _maxAttackRange = 3f;
     [SerializeField] private float _cooldown = 3f;
-    [SerializeField] private Collider2D _rightHandCollider; 
-    [SerializeField] private Collider2D _leftHandCollider;
+    [SerializeField] private BoxCollider2D _rightHandCollider; 
+    [SerializeField] private BoxCollider2D _leftHandCollider;
     private float _cooldownRemaining;
-    private Transform _player;
-
     private Animator _myAnim;
+    private Transform _player;
+    readonly int MELEE_ATTACK_HASH = Animator.StringToHash("MeleeAttack");
+
+    public bool IsActive { get; private set; } = false;
 
     private void Awake() {
         _myAnim = GetComponent<Animator>();
@@ -24,13 +26,13 @@ public class AntEaterMelee : MonoBehaviour
 
     private void Update() {
         _cooldownRemaining -= Time.deltaTime;
-        if (_cooldownRemaining < 0 && IsPlayerInRange()) {
+        if (IsActive && _cooldownRemaining <= 0f && IsPlayerInRange()) {
             UseMeleeAttack();
         }
     }
 
     private void UseMeleeAttack() {
-        _myAnim.SetBool("MeleeAttack", true);
+        _myAnim.SetBool(MELEE_ATTACK_HASH, true);
         _cooldownRemaining = _cooldown;
     }
 
@@ -45,7 +47,7 @@ public class AntEaterMelee : MonoBehaviour
     }
 
     private void EndMeleeAttackAnimEvent() {
-        _myAnim.SetBool("MeleeAttack", false);
+        _myAnim.SetBool(MELEE_ATTACK_HASH, false);
     }
 
     private bool IsPlayerInRange() {
@@ -57,5 +59,9 @@ public class AntEaterMelee : MonoBehaviour
         }
 
         return false;
+    }
+    public void SetIsActive(bool value) {
+        //Debug.Log("MeleeAttack is active called.");
+        IsActive = value;
     }
 }

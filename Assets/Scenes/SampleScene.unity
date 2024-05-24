@@ -472,7 +472,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tongueGrowTime: 0.2
-  _tongueRange: 5
+  _minTongueRange: 1
+  _maxTongueRange: 4
   _tongueCooldown: 2
   _tongueTelegraphTime: 0.3
   _tongueTelegraphRange: 0.75
@@ -1083,7 +1084,7 @@ Transform:
   m_GameObject: {fileID: 655032758}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.007, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1241,6 +1242,73 @@ Transform:
   - {fileID: 1764976699}
   m_Father: {fileID: 1058124754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &958031002
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 958031003}
+  - component: {fileID: 958031004}
+  m_Layer: 0
+  m_Name: Tail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &958031003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958031002}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.38, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1058124754}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!70 &958031004
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958031002}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.055730704, y: 0.038582694}
+  m_Size: {x: 2.500454, y: 1.0771774}
+  m_Direction: 1
 --- !u!1 &982235318
 GameObject:
   m_ObjectHideFlags: 0
@@ -1399,6 +1467,7 @@ GameObject:
   - component: {fileID: 1058124762}
   - component: {fileID: 1058124761}
   - component: {fileID: 1058124763}
+  - component: {fileID: 1058124764}
   m_Layer: 0
   m_Name: Ant Eater
   m_TagString: Untagged
@@ -1466,16 +1535,17 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1058124752}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 2.63, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0.82, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 350843874}
-  - {fileID: 916260142}
+  - {fileID: 958031003}
   - {fileID: 655032759}
+  - {fileID: 916260142}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1058124757
 Rigidbody2D:
   serializedVersion: 4
@@ -1596,8 +1666,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityInfo: {fileID: 11400000, guid: 25c23197bf6fdab4a8663f2244d75579, type: 2}
-  _moveStateInfo: {fileID: 11400000, guid: 433d7ed2607fbbc4b82a9c045e66a3ff, type: 2}
   _chaseStateInfo: {fileID: 11400000, guid: dc0b472818aeebb4590c0d9057971365, type: 2}
+  _meleeStateInfo: {fileID: 11400000, guid: 1bdf206f8e50d6b46bc591b58374415d, type: 2}
 --- !u!95 &1058124762
 Animator:
   serializedVersion: 5
@@ -1631,12 +1701,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5145d923a73b3384ba0560bced48daa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minAttackAngle: 90
-  _maxAttackAngle: 270
+  _minAttackAngle: 130
+  _maxAttackAngle: 180
   _maxAttackRange: 3
   _cooldown: 3
   _rightHandCollider: {fileID: 180845804}
   _leftHandCollider: {fileID: 982235321}
+--- !u!114 &1058124764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058124752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2ae7e14224c14c4aa36160a4b1adc9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _minAttackAngle: 0
+  _maxAttackAngle: 60
+  _maxAttackRange: 4
+  _attackRotationAngle: 45
+  _attackSpeed: 0.15
+  _cooldown: 5
+  _tailCollider: {fileID: 958031004}
 --- !u!1 &1086178447
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2343,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!1 &1654356952
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1654356953}
+  m_Layer: 0
+  m_Name: AntEater
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1654356953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654356952}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.81999993, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1667617144
 GameObject:
   m_ObjectHideFlags: 0
@@ -2582,3 +2702,4 @@ SceneRoots:
   - {fileID: 554374841}
   - {fileID: 1308206231}
   - {fileID: 1058124754}
+  - {fileID: 1654356953}

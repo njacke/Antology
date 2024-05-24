@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7166748670644de4a825519968d4e00e, type: 3}
-  m_Name: AntEaterChaseStateInfo
+  m_Script: {fileID: 11500000, guid: 1c3cdaf4a11514541b0c505a7846eb4a, type: 3}
+  m_Name: AntEaterMeleeStateInfo
   m_EditorClassIdentifier: 
-  MovementSpeed: 2
-  RotationSpeed: 5
-  MaxChaseRange: 12
-  MinChaseRange: 4
+  MaxMeleeRange: 4

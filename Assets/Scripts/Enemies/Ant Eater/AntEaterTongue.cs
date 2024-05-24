@@ -6,7 +6,8 @@ using UnityEngine;
 public class AntEaterTongue : MonoBehaviour
 {
     [SerializeField] private float _tongueGrowTime = 1f;
-    [SerializeField] private float _tongueRange = 3f;
+    [SerializeField] private float _minTongueRange = 1f;
+    [SerializeField] private float _maxTongueRange = 4f;
     [SerializeField] private float _tongueCooldown = 2f;
     [SerializeField] private float _tongueTelegraphTime = .3f;
     [SerializeField] private float _tongueTelegraphRange = .5f;
@@ -40,17 +41,15 @@ public class AntEaterTongue : MonoBehaviour
     private void Update() {
         //Debug.Log("Tongue CD" + _tongueCooldownRemaining);
         //Debug.Log(IsActive);
+        _tongueCooldownRemaining -= Time.deltaTime;
         if (IsActive && _tongueCooldownRemaining <= 0f && IsPlayerInRange()) {
             StartCoroutine(UseTongueRoutine());
-        }
-        else {
-            _tongueCooldownRemaining -= Time.deltaTime;
         }
     }
 
     private void FixedUpdate() {
         if (_playerHit) {
-            Debug.Log("Tongue player rb being used");
+            //Debug.Log("Tongue player rb being used");
             _playerRb.MovePosition(new Vector2(Mathf.Lerp(_playerRb.transform.position.x, this.transform.position.x, _linearT),
                                                Mathf.Lerp(_playerRb.transform.position.y, this.transform.position.y, _linearT)));
         }
@@ -58,7 +57,7 @@ public class AntEaterTongue : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.GetComponent<PlayerController>()) {
-            Debug.Log("Player was hit.");
+            //Debug.Log("Player was hit.");
             _playerHit = true;
             _playerController.MovementLocked = true;
             _playerCombat.CanAttack = false;
@@ -101,15 +100,15 @@ public class AntEaterTongue : MonoBehaviour
 
         timePassed = 0f;
 
-        while (_spriteRenderer.size.x < _tongueRange && !_playerHit) {
+        while (_spriteRenderer.size.x < _maxTongueRange && !_playerHit) {
             timePassed += Time.deltaTime;
             _linearT = timePassed / _tongueGrowTime;
 
-            _spriteRenderer.size = new Vector2(Mathf.Lerp(startSpriteRendererX, _tongueRange, _linearT), _spriteRenderer.size.y);
+            _spriteRenderer.size = new Vector2(Mathf.Lerp(startSpriteRendererX, _maxTongueRange, _linearT), _spriteRenderer.size.y);
             
-            _boxCollider2D.size = new Vector2(Mathf.Lerp(startBoxCollider2DSizeX, _tongueRange, _linearT), _boxCollider2D.size.y);
+            _boxCollider2D.size = new Vector2(Mathf.Lerp(startBoxCollider2DSizeX, _maxTongueRange, _linearT), _boxCollider2D.size.y);
 
-            _boxCollider2D.offset = new Vector2(Mathf.Lerp(startBoxCollider2DOffsetX, _tongueRange, _linearT) / 2, _boxCollider2D.offset.y);  
+            _boxCollider2D.offset = new Vector2(Mathf.Lerp(startBoxCollider2DOffsetX, _maxTongueRange, _linearT) / 2, _boxCollider2D.offset.y);  
 
             yield return null;
 
@@ -121,11 +120,11 @@ public class AntEaterTongue : MonoBehaviour
             timePassed += Time.deltaTime;
             _linearT = timePassed / _tongueGrowTime;
 
-            _spriteRenderer.size = new Vector2(Mathf.Lerp(_tongueRange, startSpriteRendererX, _linearT), _spriteRenderer.size.y);
+            _spriteRenderer.size = new Vector2(Mathf.Lerp(_maxTongueRange, startSpriteRendererX, _linearT), _spriteRenderer.size.y);
             
-            _boxCollider2D.size = new Vector2(Mathf.Lerp(_tongueRange, startBoxCollider2DSizeX, _linearT), _boxCollider2D.size.y);
+            _boxCollider2D.size = new Vector2(Mathf.Lerp(_maxTongueRange, startBoxCollider2DSizeX, _linearT), _boxCollider2D.size.y);
 
-            _boxCollider2D.offset = new Vector2(Mathf.Lerp(_tongueRange, startBoxCollider2DOffsetX, _linearT) / 2, _boxCollider2D.offset.y);  
+            _boxCollider2D.offset = new Vector2(Mathf.Lerp(_maxTongueRange, startBoxCollider2DOffsetX, _linearT) / 2, _boxCollider2D.offset.y);  
 
             yield return null;
         }
@@ -138,11 +137,11 @@ public class AntEaterTongue : MonoBehaviour
 
     private bool IsPlayerInRange() {
         var distance = Vector3.Distance(this.transform.position, _player.position);
-        return distance < _tongueRange;
+        return distance <= _maxTongueRange && distance >= _minTongueRange;
     }
 
     public void SetIsActive(bool value) {
-        Debug.Log("Tongue is active called.");
+        //Debug.Log("Tongue is active called.");
         IsActive = value;
     }
 }

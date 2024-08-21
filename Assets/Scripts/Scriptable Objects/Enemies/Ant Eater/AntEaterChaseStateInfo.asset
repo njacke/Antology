@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7166748670644de4a825519968d4e00e, type: 3}
   m_Name: AntEaterChaseStateInfo
   m_EditorClassIdentifier: 
-  MovementSpeed: 2
-  RotationSpeed: 5
-  MaxChaseRange: 12
-  MinChaseRange: 4
+  MovementSpeed: 1.5
+  RotationSpeed: 1.5
+  MaxChaseRange: 20
+  MinChaseRange: 3

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -6,8 +7,10 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private int _baseHealth = 1;
-
+    [SerializeField] private float _immuneDur = .5f;
+    private float _immuneDurRemaining = 0f;
     private int _currentArmor = 0;
+    private Shield _currentShield;
 
     private EquipmentManager _equipmentManager;
 
@@ -15,25 +18,39 @@ public class PlayerHealth : MonoBehaviour
         _equipmentManager = GetComponent<EquipmentManager>();
     }
 
-    private void Start()
-    {
-        //StartCoroutine(TakeDamageTestRoutine());
+    private void Update() {
+        _immuneDurRemaining -= Time.deltaTime;
     }
 
     private void OnEnable() {
-        EquipmentManager.OnEquipmentChange += UpdateCurrentArmor;
+        EquipmentManager.OnEquipmentChange += EquipmentManager_OnEquipmentChange;
+        DamageDealer.OnDamageDealtToPlayer += DamageDealer_OnDamageDealtToPlayer;
+        Shield.OnShieldActivated += Shield_OnShieldActivated;
+        Shield.OnShieldDeactivated += Shield_OnShieldDeactivated;
     }
 
     private void OnDisable() {
-        EquipmentManager.OnEquipmentChange -= UpdateCurrentArmor;
+        EquipmentManager.OnEquipmentChange -= EquipmentManager_OnEquipmentChange;
+        DamageDealer.OnDamageDealtToPlayer -= DamageDealer_OnDamageDealtToPlayer;
+        Shield.OnShieldActivated -= Shield_OnShieldActivated;
+        Shield.OnShieldDeactivated -= Shield_OnShieldDeactivated;
     }
 
-    private IEnumerator TakeDamageTestRoutine() {
-        for ( int i = 0; i < 4; i++) {
-            yield return new WaitForSeconds(3f);
-            Debug.Log("Taking damage.");
-            TakeDamage(1);
-        }
+    private void EquipmentManager_OnEquipmentChange() {
+        UpdateCurrentArmor();
+    }
+
+    private void DamageDealer_OnDamageDealtToPlayer(int damageAmount) {
+        TakeDamage(damageAmount);
+    }
+
+    private void Shield_OnShieldActivated(Shield sender) {
+        _currentShield = sender;
+    }
+
+    private void Shield_OnShieldDeactivated(Shield sender) {
+        Destroy(sender.gameObject);
+        _currentShield = null;
     }
 
     private void UpdateCurrentArmor() {
@@ -46,10 +63,24 @@ public class PlayerHealth : MonoBehaviour
         }
 
         _currentArmor = currentArmor;
-        //Debug.Log("Current armor: " + _currentArmor);
     }
 
     public void TakeDamage(int damageAmount) {
+        // return if player is immune
+        if (_immuneDurRemaining >= 0f) {
+            return;
+        }
+
+        // take shield damage
+        if (_currentShield != null) {
+            Destroy(_currentShield.gameObject);
+            _currentShield = null;
+            _immuneDurRemaining = _immuneDur;
+            Debug.Log("Damage taken, shield destroyed.");            
+            return;
+        }
+        
+        // take armor damage
         for (int i = 0; i < damageAmount; i++) {
             if (_currentArmor > 0) {                
                 foreach (var armor in _equipmentManager.ArmorDict) {
@@ -59,11 +90,12 @@ public class PlayerHealth : MonoBehaviour
                         break; // 1 "damage" per loop to 1st armor found
                     }
                 }
-            }
-            else {
+            } else {
                 _baseHealth--;
             }
         }
+        
+        _immuneDurRemaining = _immuneDur;
 
         if (_baseHealth <= 0) {
             // handle player death

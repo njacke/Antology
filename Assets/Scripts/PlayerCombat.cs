@@ -13,8 +13,8 @@ public class PlayerCombat : MonoBehaviour
 
     [SerializeField] private Ability _headAbility;  
     [SerializeField] private Ability _topAbility;  
-    private Ability _midAbility;  
-    private Ability _botAbility;
+    [SerializeField] private Ability _midAbility;  
+    [SerializeField] private Ability _botAbility;
 
     private float _primaryAttackCooldownRemaining = 0f;
     private float _secondaryAttackCooldownRemaining = 0f;

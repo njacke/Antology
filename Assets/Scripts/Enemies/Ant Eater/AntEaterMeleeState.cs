@@ -14,15 +14,11 @@ public class AntEaterMeleeState : MeleeState
     public override void Enter()
     {
         base.Enter();
-        _antEater.MeleeAttack.SetIsActive(true);
-        _antEater.TailAttack.SetIsActive(true);
     }
 
     public override void Exit()
     {
         base.Exit();
-        _antEater.MeleeAttack.SetIsActive(false);
-        _antEater.TailAttack.SetIsActive(false);
     }
 
     public override void LogicUpdate()
@@ -31,8 +27,18 @@ public class AntEaterMeleeState : MeleeState
         Vector3 dir = _target.position - _entity.transform.position;
         float distance = dir.magnitude;
         
-        if (distance > _meleeStateInfo.MaxMeleeRange) {
+        if (distance > _meleeStateInfo.MaxMeleeRange && !_antEater.IsBusy) {
             _antEater.StateMachine.ChangeState(_antEater.ChaseState);
+        } else {
+            if (!_antEater.IsBusy) {
+                _antEater.MeleeAttack.TryUseMeleeAttack();
+            }
+            if (!_antEater.IsBusy) {
+                _antEater.TailAttack.TryUseTailAttack();
+            }
+            if (!_antEater.IsBusy) {
+                _antEater.Reposition.TryUseReposition();
+            }
         }
 
         //Debug.Log("I AM IN MELEE STATE");

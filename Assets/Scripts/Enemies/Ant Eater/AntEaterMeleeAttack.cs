@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AntEaterMeleeAttack : MonoBehaviour
 {
+    public static Action<bool> OnMeleeAttackStateChange;
+
     [SerializeField] private float _minAttackAngle = 130f;
     [SerializeField] private float _maxAttackAngle = 180f;
     [SerializeField] private float _maxAttackRange = 3f;
@@ -15,25 +18,23 @@ public class AntEaterMeleeAttack : MonoBehaviour
     private Transform _player;
     readonly int MELEE_ATTACK_HASH = Animator.StringToHash("MeleeAttack");
 
-    public bool IsActive { get; private set; } = false;
-
     private void Awake() {
         _myAnim = GetComponent<Animator>();
     }
+
     private void Start() {
         _player = FindObjectOfType<PlayerController>().transform;
     }
 
     private void Update() {
         _cooldownRemaining -= Time.deltaTime;
-        if (IsActive && _cooldownRemaining <= 0f && IsPlayerInRange()) {
-            UseMeleeAttack();
-        }
     }
+
 
     private void UseMeleeAttack() {
         _myAnim.SetBool(MELEE_ATTACK_HASH, true);
         _cooldownRemaining = _cooldown;
+        OnMeleeAttackStateChange?.Invoke(true);
     }
 
     private void EnableColliderAnimEvent() {
@@ -42,12 +43,13 @@ public class AntEaterMeleeAttack : MonoBehaviour
     }
 
     private void DisableColliderAnimEvent() {
-        _rightHandCollider.enabled = true;
-        _leftHandCollider.enabled = true;
+        _rightHandCollider.enabled = false;
+        _leftHandCollider.enabled = false;
     }
 
     private void EndMeleeAttackAnimEvent() {
         _myAnim.SetBool(MELEE_ATTACK_HASH, false);
+        OnMeleeAttackStateChange?.Invoke(false);
     }
 
     private bool IsPlayerInRange() {
@@ -60,8 +62,10 @@ public class AntEaterMeleeAttack : MonoBehaviour
 
         return false;
     }
-    public void SetIsActive(bool value) {
-        //Debug.Log("MeleeAttack is active called.");
-        IsActive = value;
+
+    public void TryUseMeleeAttack() {
+        if (_cooldownRemaining <= 0f && IsPlayerInRange()) {
+            UseMeleeAttack();
+        }
     }
 }

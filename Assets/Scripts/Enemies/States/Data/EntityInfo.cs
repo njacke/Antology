@@ -6,4 +6,5 @@ using UnityEngine;
 
 public class EntityInfo : ScriptableObject
 {
+    public int BaseHealth = 1;
 }

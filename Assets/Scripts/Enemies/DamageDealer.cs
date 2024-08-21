@@ -1,18 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class DamageDealer : MonoBehaviour
 {
-    private PlayerHealth _playerHealth;
-
-    private void Start() {
-        _playerHealth = FindObjectOfType<PlayerHealth>();
-        
-    }
+    public static Action<int> OnDamageDealtToPlayer;
+    [SerializeField] private int _damageAmount = 1;
+    
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.GetComponent<PlayerController>()) {
-            _playerHealth.TakeDamage(1);
+            OnDamageDealtToPlayer?.Invoke(_damageAmount);
             Debug.Log("Player took damage");
         }
     }

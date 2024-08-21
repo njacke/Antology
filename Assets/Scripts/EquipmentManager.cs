@@ -47,8 +47,7 @@ public class EquipmentManager : MonoBehaviour
         Bot
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         _player = GetComponent<PlayerController>().transform;
         DictsSetup();
     }
@@ -76,11 +75,10 @@ public class EquipmentManager : MonoBehaviour
         EquipItem(_equipmentList.armorHeadPrefabs[0]);
         EquipItem(_equipmentList.armorTopPrefabs[0]);
         EquipItem(_equipmentList.armorMidPrefabs[0]);
-        EquipItem(_equipmentList.armorBotPrefabs[0]);        
+        EquipItem(_equipmentList.armorBotPrefabs[0]);      
     }
     
-    private void DictsSetup()
-    {
+    private void DictsSetup() {
         _abilitySlotDict = new Dictionary<EquipmentSlot, Transform>() {
             { EquipmentSlot.Head, _headAbilitySlot },
             { EquipmentSlot.Top, _topAbilitySlot },
@@ -110,21 +108,17 @@ public class EquipmentManager : MonoBehaviour
         };
     }
 
-    private void EquipItem(GameObject equipmentPrefab) {  
-        
+    private void EquipItem(GameObject equipmentPrefab) {          
         if (!equipmentPrefab.TryGetComponent<Equipment>(out var equipment)) {
             return;
-        }
-
-        else if (equipment.Type == Equipment.EquipmentType.Ability) {
+        } else if (equipment.Type == Equipment.EquipmentType.Ability) {
             Debug.Log("Equipping ability.");
             var newAbility = equipment.GetComponent<Ability>();
             UnequipItem(newAbility.AbilityInfo.Slot, Equipment.EquipmentType.Ability);
 
             _abilityDict[newAbility.AbilityInfo.Slot] = Instantiate(equipment, _player.transform.position, _player.transform.rotation).GetComponent<Ability>();
             _abilityDict[newAbility.AbilityInfo.Slot].transform.SetParent(_abilitySlotDict[newAbility.AbilityInfo.Slot]);
-        }        
-        else {
+        } else {
             Debug.Log("Equipping armor.");
             var newArmor = equipment.GetComponent<Armor>();
             UnequipItem(newArmor.ArmorInfo.Slot, Equipment.EquipmentType.Armor);
@@ -142,8 +136,7 @@ public class EquipmentManager : MonoBehaviour
             //Debug.Log ("Unequipping ability");
             Destroy(_abilityDict[slot].gameObject);
             _abilityDict[slot] = null;
-        }
-        else if (type == Equipment.EquipmentType.Armor && _armorDict[slot] != null) {
+        } else if (type == Equipment.EquipmentType.Armor && _armorDict[slot] != null) {
             //Debug.Log ("Unequipping armor");
             Destroy(_armorDict[slot].gameObject);
             _armorDict[slot] = null;

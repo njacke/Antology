@@ -10,5 +10,5 @@ public class AbilityInfo : ScriptableObject
     public Ability.AbilitySpeed Speed;
     public float Cooldown;
     public float Duration;
-    public float Damage;
+    public int Damage;
 }

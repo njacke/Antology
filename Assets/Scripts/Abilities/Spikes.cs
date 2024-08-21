@@ -19,8 +19,9 @@ public class Spikes : Ability, IAbilityAction
 
     private void SpawnProjectiles() {
         Debug.Log("Spawn projectiles called.");
-        Instantiate(_projectilePrefab, _spawnPointL.position, _player.rotation);
-        Instantiate(_projectilePrefab, _spawnPointR.position, _player.rotation);
+        var p1 = Instantiate(_projectilePrefab, _spawnPointL.position, _player.rotation).GetComponent<Projectile>();
+        var p2 = Instantiate(_projectilePrefab, _spawnPointR.position, _player.rotation).GetComponent<Projectile>();
+        p1.ProjectileDamage = AbilityInfo.Damage;
+        p2.ProjectileDamage = AbilityInfo.Damage;
     }
-
 }

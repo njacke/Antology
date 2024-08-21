@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a346830b9aedd5409485e6b7d1bdf38, type: 3}
   m_Name: AntEaterEntity
   m_EditorClassIdentifier: 
+  BaseHealth: 50

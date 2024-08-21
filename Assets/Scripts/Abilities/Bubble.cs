@@ -17,6 +17,7 @@ public class Bubble : Ability, IAbilityAction
     }
 
     private void SpawnShield() {
+        Debug.Log("Spawning shield");
         var spawnedShield = Instantiate(_shieldPrefab, this.transform.position, Quaternion.identity);
         spawnedShield.transform.SetParent(_player);
         spawnedShield.GetComponent<Shield>().ShieldDuration = AbilityInfo.Duration;

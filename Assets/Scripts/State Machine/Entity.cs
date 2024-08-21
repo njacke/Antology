@@ -1,17 +1,19 @@
 using UnityEngine;
 
-public class Entity : MonoBehaviour
+public class Entity : MonoBehaviour, IDamagable
 {
+    [SerializeField] private EntityInfo EntityInfo;
     public FiniteStateMachine StateMachine;
-    public EntityInfo EntityInfo;
     public int FacingDirection { get; private set; }
     public Rigidbody2D Rb { get; private set; }
     public Animator Anim { get; private set; }
     private Vector2 _velocityWorkspace;
+    protected int _currentHealth;
 
     public virtual void Awake() {
         Rb = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
+        _currentHealth = EntityInfo.BaseHealth;
     }
 
     public virtual void Start() {
@@ -29,5 +31,9 @@ public class Entity : MonoBehaviour
     public virtual void SetVelocity(float velocity) {
         _velocityWorkspace.Set(FacingDirection * velocity, Rb.velocity.y);
         Rb.velocity = _velocityWorkspace;
+    }
+
+    public virtual void TakeDamage(int damageAmount) {
+        _currentHealth -= damageAmount;
     }
 }

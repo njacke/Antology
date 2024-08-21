@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: 13001
   Name: Bubble
   Slot: 2
-  Speed: 1
+  Speed: 2
   Cooldown: 5
-  Duration: 1
+  Duration: 2
   Damage: 0

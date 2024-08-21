@@ -16,7 +16,9 @@ public class Bite : Ability, IAbilityAction, IAbilityEnd
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log("Target hit with bite.");
+        Debug.Log("Checking for IDamagable");
+        IDamagable damagable = other.GetComponent<IDamagable>();
+        damagable?.TakeDamage(AbilityInfo.Damage);
     }
 
     public void AbilityAction() {

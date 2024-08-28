@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEditor.Callbacks;
 
 public class AntEaterTailAttack : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class AntEaterTailAttack : MonoBehaviour
     [SerializeField] private float _maxAttackRange = 3f;
     [SerializeField] private float _attackRotationAngle = 20f;
     [SerializeField] private float _attackDuration = .2f;
+    [SerializeField] private float _knockbackForce = 5f;
+    [SerializeField] private float _knockbackTime = .2f;
     [SerializeField] private float _cooldown = 5f;
     [SerializeField] private CapsuleCollider2D _tailCollider;
     private float _cooldownRemaining;
@@ -33,6 +36,18 @@ public class AntEaterTailAttack : MonoBehaviour
         _cooldownRemaining -= Time.deltaTime;
     }
 
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (_tailCollider.enabled && other.gameObject == _player.gameObject) {
+            var playerKnockback = other.GetComponent<Knockback>();
+            if (playerKnockback != null) {            
+                Vector2 collisonPoint = other.ClosestPoint(_tailCollider.gameObject.transform.position);
+                Vector2 dir = (collisonPoint - (Vector2)_tailCollider.gameObject.transform.position).normalized;
+                //Vector2 dir = ((Vector2)_player.position - collisonPoint).normalized;
+                playerKnockback.GetKnockedBack(dir, _knockbackForce, _knockbackTime);
+            }
+        }
+    }
+
     private void UseTailAttack() {
         _myAnim.SetBool(TAIL_ATTACK_HASH, true);
         _cooldownRemaining = _cooldown;
@@ -44,8 +59,6 @@ public class AntEaterTailAttack : MonoBehaviour
     }
 
     private IEnumerator TailAttackRoutine() {
-        _tailCollider.enabled = true;
-
         float startRotationAngleZ = this.transform.localEulerAngles.z;
         //Debug.Log(startRotationAngleZ);
         Quaternion startRotation = this.transform.rotation;
@@ -77,6 +90,7 @@ public class AntEaterTailAttack : MonoBehaviour
         }
 
         Debug.Log("Exited 1st rotation");
+        _tailCollider.enabled = true;
         timePassed = 0f;
 
         // rotation towards targetRotationMax

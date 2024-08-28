@@ -10,7 +10,7 @@ public class Spikes : Ability, IAbilityAction
     private Transform _player;
     
     private void Start() {
-        _player = FindObjectOfType<PlayerController>().transform;                
+        _player = GetComponentInParent<PlayerController>().transform;                
     }
 
     public void AbilityAction() {

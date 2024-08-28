@@ -14,12 +14,13 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other) {
         Debug.Log("Checking for IDamagable");
         IDamagable damagable = other.GetComponent<IDamagable>();
-        damagable?.TakeDamage(ProjectileDamage);
-
+        Vector3 collisonPoint = other.ClosestPoint(this.transform.position);
         Destroy(gameObject);
+
+        damagable?.TakeDamage(ProjectileDamage, collisonPoint);
     }
 
     private void MoveProjectile() {
-        transform.Translate(_moveSpeed * Time.deltaTime * Vector3.up);
+        transform.Translate(_moveSpeed * Time.deltaTime * Vector3.right);
     }
 }

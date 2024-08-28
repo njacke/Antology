@@ -8,6 +8,7 @@ public class Shield : MonoBehaviour
 {
     public static Action<Shield> OnShieldActivated;
     public static Action<Shield> OnShieldDeactivated;
+    [SerializeField] GameObject _destroyVFX;
     public float ShieldDuration { set { _shieldDuration = value; _shieldDurationAssigned = true; } }
     private float _shieldDuration;
     private float _shieldLifetime;
@@ -27,5 +28,12 @@ public class Shield : MonoBehaviour
                 Debug.Log("Shield expired.");        
             }
         }
+    }
+
+    public virtual void DestroyShield() {
+        var parent = this.transform.parent;
+        Destroy(this.gameObject);
+        var vfx = Instantiate(_destroyVFX, parent.transform.position, Quaternion.identity);
+        vfx.transform.SetParent(parent);
     }
 }

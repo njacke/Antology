@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class AntEater : Entity
 {
     [SerializeField] private ChaseStateInfo _chaseStateInfo;
     [SerializeField] private MeleeStateInfo _meleeStateInfo;
+    [SerializeField] private GameObject _takeDamageVFX;
 
     public AntEaterMeleeState MeleeState { get; private set; }
     public AntEaterChaseState ChaseState { get; private set; }
@@ -35,6 +37,7 @@ public class AntEater : Entity
         base.Start();
         _player = FindObjectOfType<PlayerController>().transform;
 
+
         MeleeState = new AntEaterMeleeState(this, StateMachine, ANIM_BOOL_MOVE_HASH, _meleeStateInfo, _player, this);
         ChaseState = new AntEaterChaseState(this, StateMachine, ANIM_BOOL_CHASE_HASH, _chaseStateInfo, _player, this);
 
@@ -57,8 +60,11 @@ public class AntEater : Entity
         IsBusy = busyState;
     }
 
-    public override void TakeDamage(int damageAmount) {
-        base.TakeDamage(damageAmount);
+    public override void TakeDamage(int damageAmount, Vector3 damagePos) {
+        base.TakeDamage(damageAmount, damagePos);
+        Instantiate(_takeDamageVFX, damagePos, Quaternion.identity);
+        
+        OnDamageTaken?.Invoke(_currentHealth, _entityInfo.BaseHealth);
         Debug.Log("Current AntEater HP: " + _currentHealth);
 
         if (_currentHealth <= 0) {

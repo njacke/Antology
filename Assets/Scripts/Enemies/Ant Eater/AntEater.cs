@@ -44,13 +44,15 @@ public class AntEater : Entity
         StateMachine.Initialize(ChaseState);
     }
 
-    private void OnEnable() {
+    public override void OnEnable() {
+        base.OnEnable();
         AntEaterMeleeAttack.OnMeleeAttackStateChange += SetIsBusy;
         AntEaterTailAttack.OnTailAttackStateChange += SetIsBusy;
         AntEaterReposition.OnRepositionStateChange += SetIsBusy;
     }
 
-    private void OnDisable() {
+    public override void OnDisable() {
+        base.OnDisable();
         AntEaterMeleeAttack.OnMeleeAttackStateChange -= SetIsBusy;
         AntEaterTailAttack.OnTailAttackStateChange -= SetIsBusy;
         AntEaterReposition.OnRepositionStateChange -= SetIsBusy;        
@@ -64,7 +66,7 @@ public class AntEater : Entity
         base.TakeDamage(damageAmount, damagePos);
         Instantiate(_takeDamageVFX, damagePos, Quaternion.identity);
         
-        OnDamageTaken?.Invoke(_currentHealth, _entityInfo.BaseHealth);
+        OnHealthChanged?.Invoke(_currentHealth, _entityInfo.BaseHealth);
         Debug.Log("Current AntEater HP: " + _currentHealth);
 
         if (_currentHealth <= 0) {

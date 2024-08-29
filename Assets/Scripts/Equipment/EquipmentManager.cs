@@ -58,6 +58,24 @@ public class EquipmentManager : MonoBehaviour
         //StartCoroutine(EquipItemTestRoutine());
     }
 
+    private void OnEnable() {
+        ControlsMenuUI.OnFightSelected += ControlsMenuUI_OnFightSelected;
+        LoadoutMenuUI.OnFightSelected += LoadoutMenuUI_OnFightSelected;
+    }
+
+    private void OnDisable() {
+        ControlsMenuUI.OnFightSelected -= ControlsMenuUI_OnFightSelected;        
+        LoadoutMenuUI.OnFightSelected -= LoadoutMenuUI_OnFightSelected;
+    }
+
+    private void LoadoutMenuUI_OnFightSelected() {
+        InitialiseEquipmentTest();
+    }
+
+    private void ControlsMenuUI_OnFightSelected() {
+        InitialiseEquipmentTest();
+    }
+
     private IEnumerator EquipItemTestRoutine() {
         for ( int i = 0; i < 5; i++) {
             yield return new WaitForSeconds(3f);
@@ -66,6 +84,7 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
+    //TODO: remove when equipment selection is setup properly through loadout 
     private void InitialiseEquipmentTest() {
         EquipItem(_equipmentList.abilityHeadPrefabs[0]);
         EquipItem(_equipmentList.abilityTopPrefabs[0]);
@@ -75,7 +94,7 @@ public class EquipmentManager : MonoBehaviour
         EquipItem(_equipmentList.armorHeadPrefabs[0]);
         EquipItem(_equipmentList.armorTopPrefabs[0]);
         EquipItem(_equipmentList.armorMidPrefabs[0]);
-        EquipItem(_equipmentList.armorBotPrefabs[0]);      
+        EquipItem(_equipmentList.armorBotPrefabs[0]);  
     }
     
     private void DictsSetup() {

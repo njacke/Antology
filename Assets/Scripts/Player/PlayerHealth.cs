@@ -10,14 +10,16 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private GameObject _takeDamageVFX;
     [SerializeField] private GameObject _deathSplatterVFX;
     [SerializeField] private float _deathSplatterDelay = .5f;
-    private float _immuneDurRemaining = 0f;
+    private int _currentHealth;
     private int _currentArmor = 0;
     private Shield _currentShield;
+    private float _immuneDurRemaining = 0f;
 
     private EquipmentManager _equipmentManager;
 
     private void Awake() {
         _equipmentManager = GetComponent<EquipmentManager>();
+        _currentHealth = _baseHealth;
     }
 
     private void Update() {
@@ -30,6 +32,7 @@ public class PlayerHealth : MonoBehaviour
         Shield.OnShieldActivated += Shield_OnShieldActivated;
         Shield.OnShieldDeactivated += Shield_OnShieldDeactivated;
         OnPlayerDeath += PlayerHealth_OnPlayerDeath;
+        GameManager.OnGameStarted += GameManager_OnGameStarted;
     }
 
     private void OnDisable() {
@@ -38,6 +41,12 @@ public class PlayerHealth : MonoBehaviour
         Shield.OnShieldActivated -= Shield_OnShieldActivated;
         Shield.OnShieldDeactivated -= Shield_OnShieldDeactivated;
         OnPlayerDeath -= PlayerHealth_OnPlayerDeath;
+        GameManager.OnGameStarted -= GameManager_OnGameStarted;
+    }
+
+    private void GameManager_OnGameStarted() {
+        _currentHealth = _baseHealth;
+        //TODO: add removal of death splatter if needed
     }
 
     private void EquipmentManager_OnEquipmentChange() {
@@ -104,7 +113,7 @@ public class PlayerHealth : MonoBehaviour
                     }
                 }
             } else {
-                _baseHealth--;
+                _currentHealth--;
                 Instantiate(_takeDamageVFX, this.transform.position, Quaternion.identity);
             }
         }
@@ -116,7 +125,7 @@ public class PlayerHealth : MonoBehaviour
         
         _immuneDurRemaining = _immuneDur;
 
-        if (_baseHealth <= 0) {
+        if (_currentHealth <= 0) {
             // handle player death
             OnPlayerDeath?.Invoke();
             Debug.Log("Player Died");

@@ -7,11 +7,11 @@ public class BossHealthUI : MonoBehaviour
     [SerializeField] Image _fillHP;
 
     private void OnEnable() {
-        Entity.OnDamageTaken += Entity_OnDamageTaken;
+        Entity.OnHealthChanged += Entity_OnDamageTaken;
     }
 
     private void OnDisable() {
-        Entity.OnDamageTaken -= Entity_OnDamageTaken;
+        Entity.OnHealthChanged -= Entity_OnDamageTaken;
     }
 
     private void Entity_OnDamageTaken(int currentHealth, int baseHealth) {

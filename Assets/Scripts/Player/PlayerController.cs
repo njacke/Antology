@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -13,6 +14,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _rotationGracePeriod = .05f;
     [SerializeField] private float _movementGracePeriod = .08f;
 
+    [SerializeField] private ParticleSystem _dashVfxLeft;
+    [SerializeField] private ParticleSystem _dashVfxRight;
+
     public float DashCooldown { set { _dashCooldown = value; } }
     public float DashCooldownRemaining { set { _dashCooldownRemaining = value; }}
     public bool MovementLocked { set { _movementLocked = value; } }
@@ -22,10 +26,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rb;
     private EquipmentManager _equipmentManager;
     private Knockback _knockback;
+    private Vector3 _startPos;
+    private Quaternion _startRot;
 
     private Vector2 _movement = Vector2.zero;
 
-    //TODO: change to vector zero when I fix player sprites/rotation
     private Vector2 _previousMovement;
     private Vector2 _delayedMovement;
     private float _timeSinceMovementChange = 0f; 
@@ -44,39 +49,54 @@ public class PlayerController : MonoBehaviour
         _equipmentManager = GetComponent<EquipmentManager>();
         _knockback = GetComponent<Knockback>();
 
-        SetDefaultRotationTop();
+        _startPos = this.transform.position;
+        _startRot = this.transform.rotation;
     }
 
     private void Start() {
         _playerControls.Movement.Dash.performed += _ => Dash();
+        _startingDashCooldown = _dashCooldown;
 
         CalculateAndSetMoveSpeed();
-
-        _startingDashCooldown = _dashCooldown;
+        SetDefaultRotationTop();
     }
 
     private void OnEnable() {
         _playerControls.Enable();
         EquipmentManager.OnEquipmentChange += CalculateAndSetMoveSpeed;
+        PlayerHealth.OnPlayerDeath += PlayerHealth_OnPlayerDeath;
+        GameManager.OnGameStarted += GameManager_OnGameStarted;
     }
 
     private void OnDisable() {
         _playerControls.Disable();
         EquipmentManager.OnEquipmentChange -= CalculateAndSetMoveSpeed;
+        PlayerHealth.OnPlayerDeath -= PlayerHealth_OnPlayerDeath;
+        GameManager.OnGameStarted -= GameManager_OnGameStarted;
     }
 
+
     private void Update() {
-        PlayerInput();
-        TrackPlayerMovementChange();
-        TrackDashCooldown();
+        if (GameManager.Instance.IsGameActive) {
+            PlayerInput();
+            TrackPlayerMovementChange();
+            TrackDashCooldown();
+        }
     }
 
     private void FixedUpdate() {
-        Move();
+        if (GameManager.Instance.IsGameActive) {
+            Move();
+        }
+    }
+
+    private void GameManager_OnGameStarted() {
+        PlayerReset();
     }
 
     private void PlayerHealth_OnPlayerDeath() {
-        _movementLocked = true;
+        _dashVfxLeft.Stop();
+        _dashVfxRight.Stop();
     }
 
     private void PlayerInput() {
@@ -98,7 +118,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Move() {
-        if (GameManager.Instance.IsGameActive && !_movementLocked && !_knockback.GettingKnockedBack) {
+        if (!_movementLocked && !_knockback.GettingKnockedBack) {
             //_rb.velocity = Vector2.zero;
             if (_isDashing) {
                 _rb.MovePosition((Vector2)this.transform.position + _dashSpeed * Time.fixedDeltaTime * _dashDirection);
@@ -112,13 +132,18 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Dash() {
-        if (GameManager.Instance.IsGameActive && !_isDashing && !_dashIsOnCooldown && !_movementLocked && !_knockback.GettingKnockedBack) {
+        if (!_isDashing && !_dashIsOnCooldown && !_movementLocked && !_knockback.GettingKnockedBack) {
             _isDashing = true;
             _dashCooldownRemaining = _dashCooldown;
             _dashIsOnCooldown = true;
-            _dashDirection = _movement;
+            _dashDirection = _movement;            
             if (_dashDirection == Vector2.zero) {
                 _dashDirection = _delayedMovement;
+            }
+
+            if (_dashCooldownRemaining > 0f) {
+                _dashVfxLeft.Stop();
+                _dashVfxRight.Stop();
             }
 
             StartCoroutine(EndDashRoutine());
@@ -136,6 +161,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (_dashIsOnCooldown) {
             _dashIsOnCooldown = false;
+            _dashVfxLeft.Play();
+            _dashVfxRight.Play();
             Debug.Log("Dash is ready to use.");
         }
     }
@@ -157,59 +184,21 @@ public class PlayerController : MonoBehaviour
         _delayedMovement = new Vector2(0, 1);
     }
 
-    // ROTATION TOWARDS MOUSE (ALTERNATIVE CONTROL SCHEME) -> NOT USED ATM
+    // RESET
+    private void PlayerReset() {
+        SetDefaultDashCooldown();
+        _dashCooldownRemaining = 0f;
+        _dashVfxLeft.Play();
+        _dashVfxRight.Play();
 
-    private Vector3 GetMouseWorldPos() {
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    }
-
-    //TODO: FIX WITH CORRECT ATAN2 -> SEE CHASE SCRIPT
-    private void RotatePlayerToMousePos() {
-        Vector3 mouseWorldPos = GetMouseWorldPos();
-        mouseWorldPos.z = this.transform.position.z;
-
-        // get cursor direction compared to player
-        Vector3 direction = mouseWorldPos - this.transform.position;
-
-
-        // calculate direction's angle
-        float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
-
-        //Debug.Log("Angle is " + angle);
-
-        Quaternion targetRotation;
-
-
-        if (angle >= -22.5f && angle < 22.5f && this.transform.position.y < mouseWorldPos.y) { // check y axis since angle == 0 in top and bot cases
-            targetRotation = Quaternion.Euler(0, 0, 0); // TOP          
-        }
-        else if (angle >= 22.5f && angle < 67.5f) {
-            targetRotation = Quaternion.Euler(0, 0, -45); //TOP-RIGHT
-        }
-        else if (angle >= 67.5f && angle < 112.5f) {
-            targetRotation = Quaternion.Euler(0, 0, -90); //RIGHT
-        }
-        else if (angle >= 112.5f && angle < 157.5f) {
-            targetRotation = Quaternion.Euler(0, 0, -135); //BOTTOM-RIGHT
-        }
-        else if (angle >= -157.5f && angle < -112.5f) {
-            targetRotation = Quaternion.Euler(0, 0, 135); //BOTTOM-LEFT
-        }
-        else if (angle >= -112.5f && angle < -67.5f) {
-            targetRotation = Quaternion.Euler(0, 0, 90); //LEFT
-        }
-        else if (angle >= -67.5f && angle < -22.5f) {
-            targetRotation = Quaternion.Euler(0, 0, 45); //TOP-LEFT
-        }        
-        else {
-            targetRotation = Quaternion.Euler(0, 0, 180); //BOTTOM
-        }
-
-        this.transform.rotation = targetRotation;        
+        this.transform.position = _startPos;
+        this.transform.rotation = _startRot;
+        CalculateAndSetMoveSpeed();
+        SetDefaultRotationTop();
+        _movementLocked = false;
     }
 
     // PUBLIC
-
     public void CalculateAndSetMoveSpeed() {
 
         int armorsAmount = 0;

@@ -1,21 +1,29 @@
 using System;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class Entity : MonoBehaviour, IDamagable
 {
-    public static Action<int, int> OnDamageTaken;
+    public static Action<int, int> OnHealthChanged;
     [SerializeField] protected EntityInfo _entityInfo;
     public FiniteStateMachine StateMachine;
     public int FacingDirection { get; private set; }
     public Rigidbody2D Rb { get; private set; }
     public Animator Anim { get; private set; }
     private Vector2 _velocityWorkspace;
+    private Vector3 _startPos;
+    private Quaternion _startRot;
     protected int _currentHealth;
 
     public virtual void Awake() {
         Rb = GetComponent<Rigidbody2D>();
         Anim = GetComponent<Animator>();
+        
+        _startPos = this.transform.position;
+        _startRot = this.transform.rotation;
+
         _currentHealth = _entityInfo.BaseHealth;
+        OnHealthChanged?.Invoke(_currentHealth, _entityInfo.BaseHealth);
     }
 
     public virtual void Start() {
@@ -28,6 +36,21 @@ public class Entity : MonoBehaviour, IDamagable
 
     public virtual void FixedUpdate() {
         StateMachine.CurrentState.PhysicsUpdate();
+    }
+
+    public virtual void OnEnable() {
+        GameManager.OnGameStarted += GameManager_OnGameStarted;
+    }
+
+    public virtual void OnDisable() {
+        GameManager.OnGameStarted -= GameManager_OnGameStarted;        
+    }
+
+    private void GameManager_OnGameStarted() {
+        this.transform.position = _startPos;
+        this.transform.rotation = _startRot;
+        _currentHealth = _entityInfo.BaseHealth;
+        OnHealthChanged?.Invoke(_currentHealth, _entityInfo.BaseHealth);
     }
 
     public virtual void SetVelocity(float velocity) {

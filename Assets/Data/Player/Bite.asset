@@ -18,6 +18,6 @@ MonoBehaviour:
   Speed: 2
   Cooldown: 0
   Duration: 0
-  Damage: 3
+  Damage: 2
   ReadySprite: {fileID: 0}
   CdSprite: {fileID: 0}

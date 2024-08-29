@@ -17,7 +17,7 @@ public class Bite : Ability, IAbilityAction, IAbilityEnd
 
     private void OnTriggerEnter2D(Collider2D other) {
         Debug.Log("Checking for IDamagable");
-        IDamagable damagable = other.GetComponent<IDamagable>();
+        IDamagable damagable = other.GetComponentInParent<IDamagable>();
         Vector3 collisonPoint = other.ClosestPoint(this.transform.position);
 
         damagable?.TakeDamage(AbilityInfo.Damage, collisonPoint);

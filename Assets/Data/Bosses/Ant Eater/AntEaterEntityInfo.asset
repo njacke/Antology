@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0162f80d990911843b50dd74ae9081f3, type: 3}
-  m_Name: AntEaterMoveState
+  m_Script: {fileID: 11500000, guid: 5a346830b9aedd5409485e6b7d1bdf38, type: 3}
+  m_Name: AntEaterEntityInfo
   m_EditorClassIdentifier: 
-  MovementSpeed: 3
+  BaseHealth: 100

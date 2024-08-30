@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class AntEaterTongue : MonoBehaviour
 {
+    public static Action OnPlayerHit;
+
     [SerializeField] private float _tongueGrowTime = 1f;
     [SerializeField] private float _minTongueRange = 1f;
     [SerializeField] private float _maxTongueRange = 4f;
     [SerializeField] private float _tongueCooldown = 2f;
     [SerializeField] private float _tongueTelegraphTime = .3f;
     [SerializeField] private float _tongueTelegraphRange = .5f;
+    [SerializeField] private float _playerReleaseDelay = .5f;
     private float _tongueCooldownRemaining;
     private float _linearT = 0f;
     private SpriteRenderer _spriteRenderer;
@@ -61,6 +64,7 @@ public class AntEaterTongue : MonoBehaviour
             _playerHit = true;
             _playerController.MovementLocked = true;
             _playerCombat.CanAttack = false;
+            OnPlayerHit?.Invoke();
         }
     }
 
@@ -128,6 +132,8 @@ public class AntEaterTongue : MonoBehaviour
 
             yield return null;
         }
+
+        yield return new WaitForSeconds(_playerReleaseDelay);
 
         _boxCollider2D.enabled = false;
         _playerHit = false;

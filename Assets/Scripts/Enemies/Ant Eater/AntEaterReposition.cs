@@ -15,13 +15,13 @@ public class AntEaterReposition : MonoBehaviour
 
     private float _cooldownRemaining;
     private Animator _myAnim;
+    private AntEater _antEater;
     private Transform _player;
-    private Transform _tongue;
     readonly int REPOSITION_HASH = Animator.StringToHash("Reposition");
 
     private void Awake() {
         _myAnim = GetComponent<Animator>();
-        _tongue = GetComponentInChildren<AntEaterTongue>().transform;
+        _antEater = GetComponentInParent<AntEater>();
     }
     
     private void Start() {
@@ -71,7 +71,7 @@ public class AntEaterReposition : MonoBehaviour
         Vector3 dir = this.transform.position - _player.position;
         float angle = Vector3.Angle(transform.right, dir);
 
-        if (Mathf.Abs(angle) > _minRepositionAngle && Mathf.Abs(angle) < _maxRepositionAngle) {
+        if (Mathf.Abs(angle) > _minRepositionAngle && Mathf.Abs(angle) <= _maxRepositionAngle) {
             return true;
         }
 
@@ -79,7 +79,7 @@ public class AntEaterReposition : MonoBehaviour
     }
 
     public void TryUseReposition() {
-        if (_cooldownRemaining <= 0f && IsPlayerInRange()) {
+        if (!_antEater.IsBusy && _cooldownRemaining <= 0f && IsPlayerInRange()) {
             UseReposition();
         }
     }

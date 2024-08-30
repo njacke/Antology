@@ -30,15 +30,10 @@ public class AntEaterMeleeState : MeleeState
         if (distance > _meleeStateInfo.MaxMeleeRange && !_antEater.IsBusy) {
             _antEater.StateMachine.ChangeState(_antEater.ChaseState);
         } else {
-            if (!_antEater.IsBusy) {
-                _antEater.MeleeAttack.TryUseMeleeAttack();
-            }
-            if (!_antEater.IsBusy) {
-                _antEater.TailAttack.TryUseTailAttack();
-            }
-            if (!_antEater.IsBusy) {
-                _antEater.Reposition.TryUseReposition();
-            }
+            // attacks in order of priority
+            _antEater.MeleeAttack.TryUseMeleeAttack();
+            _antEater.TailAttack.TryUseTailAttack();
+            _antEater.Reposition.TryUseReposition();
         }
 
         //Debug.Log("I AM IN MELEE STATE");

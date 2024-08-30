@@ -9,7 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a346830b9aedd5409485e6b7d1bdf38, type: 3}
-  m_Name: AntEaterEntity
+  m_Script: {fileID: 11500000, guid: a0e96d51bccbe254d8262a34b34122a1, type: 3}
+  m_Name: AntEaterDeathStateInfo
   m_EditorClassIdentifier: 
-  BaseHealth: 100

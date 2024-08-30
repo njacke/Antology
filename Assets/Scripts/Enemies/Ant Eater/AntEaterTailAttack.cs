@@ -1,9 +1,6 @@
 using System.Collections;
 using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEditor.Callbacks;
 
 public class AntEaterTailAttack : MonoBehaviour
 {
@@ -21,11 +18,13 @@ public class AntEaterTailAttack : MonoBehaviour
     private float _cooldownRemaining;
     private float _linearT;
     private Animator _myAnim;
+    private AntEater _antEater;
     private Transform _player;
     readonly int TAIL_ATTACK_HASH = Animator.StringToHash("TailAttack");
 
     private void Awake() {
         _myAnim = GetComponent<Animator>();
+        _antEater = GetComponentInParent<AntEater>();
     }
 
     private void Start() {
@@ -126,7 +125,7 @@ public class AntEaterTailAttack : MonoBehaviour
         float angle = Vector3.Angle(transform.right, dir);
         //Debug.Log(Mathf.Abs(angle));
 
-        if (Mathf.Abs(angle) > _minAttackAngle && Mathf.Abs(angle) < _maxAttackAngle && dir.magnitude < _maxAttackRange) {
+        if (Mathf.Abs(angle) > _minAttackAngle && Mathf.Abs(angle) < _maxAttackAngle && dir.magnitude <= _maxAttackRange) {
             return true;
         }
 
@@ -134,7 +133,7 @@ public class AntEaterTailAttack : MonoBehaviour
     }
 
     public void TryUseTailAttack() {
-        if (_cooldownRemaining <= 0f && IsPlayerInRange()) {
+        if (!_antEater.IsBusy && _cooldownRemaining <= 0f && IsPlayerInRange()) {
             UseTailAttack();
         }
     }

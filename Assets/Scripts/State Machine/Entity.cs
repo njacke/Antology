@@ -1,10 +1,10 @@
 using System;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class Entity : MonoBehaviour, IDamagable
 {
     public static Action<int, int> OnHealthChanged;
+    public static Action OnDeath;
     [SerializeField] protected EntityInfo _entityInfo;
     public FiniteStateMachine StateMachine;
     public int FacingDirection { get; private set; }
@@ -46,7 +46,7 @@ public class Entity : MonoBehaviour, IDamagable
         GameManager.OnGameStarted -= GameManager_OnGameStarted;        
     }
 
-    private void GameManager_OnGameStarted() {
+    public virtual void GameManager_OnGameStarted() {
         this.transform.position = _startPos;
         this.transform.rotation = _startRot;
         _currentHealth = _entityInfo.BaseHealth;
@@ -60,5 +60,6 @@ public class Entity : MonoBehaviour, IDamagable
 
     public virtual void TakeDamage(int damageAmount, Vector3 damagePos) {
         _currentHealth -= damageAmount;
+        OnHealthChanged?.Invoke(_currentHealth, _entityInfo.BaseHealth);
     }
 }

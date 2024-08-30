@@ -26,6 +26,7 @@ public class ChaseState : State
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        //RotateTowardsTargetAngled();
         RotateTowardsTarget();
         MoveForward();
     }
@@ -40,6 +41,13 @@ public class ChaseState : State
     }
 
     public virtual void RotateTowardsTarget() {
+        Vector3 dir = _target.position - _entity.transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        _entity.transform.rotation = Quaternion.Slerp(_entity.transform.rotation, targetRotation, _chaseStateInfo.RotationSpeed * Time.deltaTime);        
+    }
+
+    public virtual void RotateTowardsTargetAngled() {
 
         //Debug.Log("Rotating towards target");
         //_entity.transform.right = Vector3.MoveTowards(_entity.transform.right, dir, _chaseStateInfo.RotationSpeed * Time.deltaTime);

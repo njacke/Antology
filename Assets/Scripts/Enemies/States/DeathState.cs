@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AntEaterMoveState : MoveState
+public class DeathState : State
 {
-    private AntEater _antEater;
-    public AntEaterMoveState(Entity entity, FiniteStateMachine stateMachine, int animBoolNameHash, MoveStateInfo moveStateInfo, AntEater antEater) : base(entity, stateMachine, animBoolNameHash, moveStateInfo)
-    {
-        _antEater = antEater;
+    protected DeathStateInfo _deathStateInfo;
+
+    public DeathState(Entity entity, FiniteStateMachine stateMachine, int animBoolNameHash, DeathStateInfo deathStateInfo) : base(entity, stateMachine, animBoolNameHash)
+    {        
+        _deathStateInfo = deathStateInfo;
     }
 
     public override void Enter()
